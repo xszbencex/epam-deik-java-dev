@@ -2,32 +2,39 @@ package com.epam.training.money;
 
 import static java.lang.Integer.signum;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Currency;
+import java.util.Optional;
 
+import com.epam.training.money.impl.Bank;
+import com.epam.training.money.impl.MapBank;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import com.epam.training.money.impl.Money;
+import org.mockito.Mockito;
 
-public class MoneyIT {
+public class MoneyTest {
 
     private static final Currency HUF_CURRENCY = Currency.getInstance("HUF");
     private static final Currency USD_CURRENCY = Currency.getInstance("USD");
     private static final Currency GBP_CURRENCY = Currency.getInstance("GBP");
 
+    private Bank bank = new MapBank();
+
     @Test
-    public void testAddReturnsExpectedResultWhenDifferentCurrencyIsUsed() {
+    public void testAddShouldReturnsExpectedResultWhenDifferentCurrencyIsUsed() {
         // Given
         Money underTest = new Money(120, HUF_CURRENCY);
         Money moneyToAdd = new Money(1, USD_CURRENCY);
+        Bank mockBank = Mockito.mock(Bank.class);
+        Mockito.when(mockBank.getExchangeRate(HUF_CURRENCY, USD_CURRENCY)).thenReturn(Optional.of(249.3));
 
         // When
-        Money result = underTest.add(moneyToAdd);
+        Money result = underTest.add(moneyToAdd, mockBank);
 
         // Then
         assertThat(result.getAmount(), equalTo(369.3));
@@ -41,7 +48,7 @@ public class MoneyIT {
         Money moneyToAdd = new Money(1, HUF_CURRENCY);
 
         // When
-        Money result = underTest.add(moneyToAdd);
+        Money result = underTest.add(moneyToAdd, bank);
 
         // Then
         assertThat(result.getAmount(), equalTo(121.0));
@@ -55,7 +62,7 @@ public class MoneyIT {
         Money moneyToAdd = new Money(1, GBP_CURRENCY);
 
         // When - Then
-        Assertions.assertThrows(UnsupportedOperationException.class, () -> underTest.add(moneyToAdd));
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> underTest.add(moneyToAdd, bank));
     }
 
 
@@ -67,7 +74,7 @@ public class MoneyIT {
         Money moneyToCompareWith = new Money(secondValue, USD_CURRENCY);
 
         // When
-        Integer result = underTest.compareTo(moneyToCompareWith);
+        Integer result = underTest.compareTo(moneyToCompareWith, bank);
 
         // Then
         assertThat(signum(result), equalTo(expectedSignum));
@@ -81,7 +88,7 @@ public class MoneyIT {
         Money moneyToCompareWith = new Money(secondValue, HUF_CURRENCY);
 
         // When
-        Integer result = underTest.compareTo(moneyToCompareWith);
+        Integer result = underTest.compareTo(moneyToCompareWith, bank);
 
         // Then
         assertThat(signum(result), equalTo(expectedSignum));
@@ -94,7 +101,7 @@ public class MoneyIT {
         Money moneyToCompareWith = new Money(1, GBP_CURRENCY);
 
         // When - Then
-        Assertions.assertThrows(UnsupportedOperationException.class, () -> underTest.compareTo(moneyToCompareWith));
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> underTest.compareTo(moneyToCompareWith, bank));
     }
 
 }

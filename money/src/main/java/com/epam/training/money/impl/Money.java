@@ -4,8 +4,8 @@ import java.util.Currency;
 
 public class Money {
 
-    private double amount;
-    private Currency currency;
+    private final double amount;
+    private final Currency currency;
 
     public Money(double amount, Currency currency) {
         this.amount = amount;
@@ -20,33 +20,26 @@ public class Money {
         return currency;
     }
 
-    public Money add(Money moneyzToGiveMeh) {
-        Money money = convert(moneyzToGiveMeh);
-        this.amount += money.getAmount(); // Add value of the parameter to this.val
-        return this;
+    public Money add(Money moneyToAdd, Bank bank) {
+        Money money = convert(moneyToAdd, bank);
+        return new Money(this.amount + money.getAmount(), this.currency);
     }
 
-    public Integer compareTo(Money m) {
-        Money money = convert(m);
+    public Integer compareTo(Money moneyToCompare, Bank bank) {
+        Money money = convert(moneyToCompare, bank);
         return Double.compare(this.getAmount(), money.getAmount());
     }
 
-    public Money convert(Money other){
-        if (!this.currency.equals(other.getCurrency())) { // If the two currency does not match
-            if (this.getCurrency().equals(Currency.getInstance("USD")) && other.getCurrency().equals(Currency.getInstance("HUF"))) {
-                other = new Money(other.amount *0.0034, Currency.getInstance("USD"));
-                return other;
-            }
-            else if (this.getCurrency().equals(Currency.getInstance("HUF")) && other.getCurrency().equals(Currency.getInstance("USD"))) {
-                other = new Money(other.amount *249.3, Currency.getInstance("HUF"));
-                return other;
-            }
-            else{
-                throw new UnsupportedOperationException();
-            }
-        }
-        else{
+    private Money convert(Money other, Bank bank){
+        if (!isInTheSameCurrency(other)) {
+            Double exchangeRate = bank.getExchangeRate(this.getCurrency(),other.getCurrency()).orElseThrow(() -> new UnsupportedOperationException());
+            return new Money(other.amount * exchangeRate, other.getCurrency());
+        } else {
             return other;
         }
+    }
+
+    private boolean isInTheSameCurrency(Money money) {
+        return this.currency.equals(money.getCurrency());
     }
 }
