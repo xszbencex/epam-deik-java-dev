@@ -1,56 +1,78 @@
 package com.epam.training.money.impl;
 
+import java.util.ArrayList;
 import java.util.Currency;
+import java.util.List;
 
 public class Money {
 
-    /**
-     * val
-     */
-    public double val;
-    public Currency c;
+    private static final Currency USD_CURRENCY = Currency.getInstance("USD");
+    private static final Currency HUF_CURRENCY = Currency.getInstance("HUF");
+    private final double value;
+    private final Currency currency;
+    private final List<ConversionRate> conversionRates = new ArrayList<>();
 
-    /**
-     * Constructor for money
-     * @param dValue double value
-     * @param c c
-     */
-    public Money(double dValue, Currency c) {
-        this.val = dValue;
-        this.c = c;
+    public Money(double value, Currency currency) {
+        this.value = value;
+        this.currency = currency;
+        this.conversionRates.add(new ConversionRate(HUF_CURRENCY, USD_CURRENCY, 249.3));
+        this.conversionRates.add(new ConversionRate(USD_CURRENCY, HUF_CURRENCY, 0.0034));
     }
 
-    public double how_much() {
-        return val;
+    public double getValue() {
+        return value;
     }
 
-    public Currency what() {
-        return c;
+    public Currency getCurrency() {
+        return currency;
     }
 
-    public Money add(Money moneyzToGiveMeh) {
-        // Convert
-        if (!this.c.equals(moneyzToGiveMeh.what())) { // If the two currency does not match
-            if (this.what().equals(Currency.getInstance("USD")) && moneyzToGiveMeh.what().equals(Currency.getInstance("HUF")))
-                moneyzToGiveMeh = new Money(moneyzToGiveMeh.val *0.0034, Currency.getInstance("USD"));
-            else if (this.what().equals(Currency.getInstance("HUF")) && moneyzToGiveMeh.what().equals(Currency.getInstance("USD")))
-                moneyzToGiveMeh = new Money(moneyzToGiveMeh.val *249.3, Currency.getInstance("HUF"));
-//            else if (this.what().equals(Currency.getInstance("ASD")) && moneyzToGiveMeh.what().equals(Currency.getInstance("USD")))
-//                moneyzToGiveMeh = new Money(moneyzToGiveMeh.val *249.3, Currency.getInstance("ASD"));
-            else return null;
+    public Money add(Money moneyToAdd) {
+        moneyToAdd = convert(moneyToAdd);
+        return new Money(this.value+moneyToAdd.getValue(),this.currency);
+    }
+
+    public Integer compareTo(Money moneyToCompare) {
+        moneyToCompare = convert(moneyToCompare);
+        return Double.compare(this.getValue(), moneyToCompare.getValue());
+    }
+
+    private Money convert(Money moneyToConvert) {
+//        if (!isCurrencyMatches(moneyToConvert)) {
+//            if (USD_CURRENCY.equals(getCurrency())
+//                    && HUF_CURRENCY.equals(moneyToConvert.getCurrency()))
+//                moneyToConvert = new Money(moneyToConvert.value * 0.0034, USD_CURRENCY);
+//            else if (HUF_CURRENCY.equals(getCurrency())
+//                    && USD_CURRENCY.equals(moneyToConvert.getCurrency()))
+//                moneyToConvert = new Money(moneyToConvert.value * 249.3, HUF_CURRENCY);
+//            else throw new UnsupportedOperationException("Unknown currency");
+//        }
+        for (int i = 0; i < conversionRates.size(); i++) {
+            if (moneyToConvert.currency.equals(conversionRates.get(i).source)
+                    && this.currency.equals(conversionRates.get(i).target)) {
+                return new Money(conversionRates.get(i).convert(moneyToConvert.value), this.currency);
+            }
         }
-        this.val += moneyzToGiveMeh.how_much(); // Add value of the parameter to this.val
-        return this;
+        throw new UnsupportedOperationException("Unknown currency");
     }
 
-    public Integer compareTo(Money m) {
-        if (!this.c.equals(m.what())) {
-            if (this.what().equals(Currency.getInstance("USD")) && m.what().equals(Currency.getInstance("HUF")))
-                m = new Money(m.val*0.0034, Currency.getInstance("USD"));
-            else if (this.what().equals(Currency.getInstance("HUF")) && m.what().equals(Currency.getInstance("USD")))
-                m = new Money(m.val*249.3, Currency.getInstance("HUF"));
-            else return null;
+    private boolean isCurrencyMatches(Money moneyToConvert) {
+        return this.currency.equals(moneyToConvert.getCurrency());
+    }
+
+    private class ConversionRate {
+        private final Currency source;
+        private final Currency target;
+        private final double rate;
+
+        public ConversionRate(Currency source, Currency target, double rate) {
+            this.source = source;
+            this.target = target;
+            this.rate = rate;
         }
-        return Double.compare(this.how_much(), m.how_much());
+
+        public double convert(double value) {
+            return value * this.rate;
+        }
     }
 }
