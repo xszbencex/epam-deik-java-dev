@@ -15,6 +15,7 @@ public class StaticBank implements Bank {
     }
 
     StaticBank(StaticExchangeRates exchangeRates) {
+        Objects.requireNonNull(exchangeRates, "StaticExchangeRates is a mandatory field of StaticBank");
         this.exchangeRates = exchangeRates;
     }
 

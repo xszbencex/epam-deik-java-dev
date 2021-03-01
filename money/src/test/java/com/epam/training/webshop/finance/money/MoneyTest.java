@@ -12,6 +12,7 @@ public class MoneyTest {
 
     private static final Currency HUF_CURRENCY = Currency.getInstance("HUF");
     private static final Currency USD_CURRENCY = Currency.getInstance("USD");
+    private static final Currency GBP_CURRENCY = Currency.getInstance("GBP");
 
     @Test
     public void testAddShouldReturnsExpectedResultWhenDifferentCurrencyIsUsed() {
@@ -31,4 +32,43 @@ public class MoneyTest {
         Mockito.verifyNoMoreInteractions(mockBank);
     }
 
+    @Test
+    public void testAddShouldThrowExceptionWhenExchangeRateDoesNotExist() {
+        // Given
+        Money money = new Money(1, HUF_CURRENCY);
+        Money moneyToAdd = new Money(1, GBP_CURRENCY);
+        Bank mockBank = Mockito.mock(Bank.class);
+        Mockito.when(mockBank.getExchangeRate(GBP_CURRENCY, HUF_CURRENCY)).thenReturn(Optional.empty());
+
+        // When
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> money.add(moneyToAdd, mockBank));
+
+        // Then
+        Mockito.verify(mockBank).getExchangeRate(GBP_CURRENCY, HUF_CURRENCY);
+        Mockito.verifyNoMoreInteractions(mockBank);
+    }
+
+    @Test
+    public void testAddShouldThrowNullPointerExceptionWhenBankParameterIsNull() {
+        // Given
+        Money money = new Money(1, HUF_CURRENCY);
+        Money moneyToAdd = new Money(1, USD_CURRENCY);
+
+        // When
+        Assertions.assertThrows(NullPointerException.class, () -> money.add(moneyToAdd, null));
+    }
+
+    @Test
+    public void testAddShouldThrowNullPointerExceptionWhenMoneyToAddParameterIsNull() {
+        // Given
+        Money money = new Money(1, HUF_CURRENCY);
+        Money moneyToAdd = new Money(1, USD_CURRENCY);
+        Bank mockBank = Mockito.mock(Bank.class);
+
+        // When
+        Assertions.assertThrows(NullPointerException.class, () -> money.add(null, mockBank));
+
+        // Then
+        Mockito.verifyNoMoreInteractions(mockBank);
+    }
 }

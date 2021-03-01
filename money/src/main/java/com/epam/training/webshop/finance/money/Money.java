@@ -18,6 +18,7 @@ public class Money {
     }
 
     public Money add(Money moneyToAdd, Bank bank) {
+        Objects.requireNonNull(moneyToAdd, "MoneyToAdd is a mandatory parameter");
         Money convertedMoney = moneyToAdd.to(this.currency, bank);
         return new Money(this.amount + convertedMoney.getAmount(), this.currency);
     }
@@ -40,6 +41,7 @@ public class Money {
     }
 
     public Money to(Currency toCurrency, Bank bank){
+        Objects.requireNonNull(bank, "Bank is a mandatory parameter");
         Double exchangeRate = bank.getExchangeRate(this.getCurrency(), toCurrency)
                 .orElseThrow(() -> handleMissingExchangeRate(this.currency, toCurrency));
         return new Money(this.amount * exchangeRate, toCurrency);
