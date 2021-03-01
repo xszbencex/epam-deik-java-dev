@@ -1,0 +1,29 @@
+package com.epam.training.webshop.finance.bank.staticbank.impl;
+
+import com.epam.training.webshop.finance.bank.Bank;
+import com.epam.training.webshop.finance.bank.staticbank.StaticExchangeRateSupplier;
+import com.epam.training.webshop.finance.bank.staticbank.model.StaticExchangeRates;
+
+import java.util.*;
+
+public class StaticBank implements Bank {
+
+    private final StaticExchangeRates exchangeRates;
+
+    public static StaticBank of(StaticExchangeRateSupplier exchangeRateSupplier) {
+        return new StaticBank(exchangeRateSupplier.get());
+    }
+
+    StaticBank(StaticExchangeRates exchangeRates) {
+        this.exchangeRates = exchangeRates;
+    }
+
+    @Override
+    public Optional<Double> getExchangeRate(Currency from, Currency to) {
+        if(from.equals(to)) {
+            return Optional.of(1D);
+        }
+        return Optional.ofNullable(exchangeRates.get(from, to));
+    }
+
+}
