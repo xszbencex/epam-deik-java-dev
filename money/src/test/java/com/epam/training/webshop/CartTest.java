@@ -22,7 +22,12 @@ public class CartTest {
 
     // get net price of the current content of the cart for different currencies
     // add several items to the cart from the same product
-
+    // getAggregatedGrossPrice for hungarian point of sale (27% AFA)
+    // getAggregatedGrossPrice for any other point of sale (X% AFA)
+    // add fix price coupon (HUF or USD) to the cart
+    // get the final price based on the content (products and coupons) of the cart
+    // add percentage based coupons
+    // Throw exception when final price is less then the 10% of the full price
 
     @Test
     public void testAddShouldAddAProductToTheCart() {
