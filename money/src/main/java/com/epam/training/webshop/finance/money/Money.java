@@ -42,6 +42,7 @@ public class Money {
 
     public Money to(Currency toCurrency, Bank bank){
         Objects.requireNonNull(bank, "Bank is a mandatory parameter");
+        Objects.requireNonNull(toCurrency, "Currency is a mandatory parameter");
         Double exchangeRate = bank.getExchangeRate(this.getCurrency(), toCurrency)
                 .orElseThrow(() -> handleMissingExchangeRate(this.currency, toCurrency));
         return new Money(this.amount * exchangeRate, toCurrency);
