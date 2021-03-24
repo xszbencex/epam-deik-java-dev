@@ -1,4 +1,4 @@
-package com.epam.training.money.impl;
+package com.epam.training.money.impl.domain.order;
 
 import java.util.List;
 
@@ -24,13 +24,25 @@ import java.util.List;
  *  7.1. this should include the price of the products, coupon discounts, and VAT
  *  7.2. VAT is 27% of the price of the products without any discount
  */
-public interface Basket {
+public interface Basket extends Observable {
 
     void addProduct(Product product);
-    List<Product> getProductsFromBasket();
-    void removeProduct(Product productToAdd);
-    void addCoupon(Coupon coupon);
-    List<Coupon> getCouponsFromBasket();
-    double getValuesFromBasket();
 
+    List<Product> getProductsFromBasket();
+
+    void removeProduct(Product productToRemove);
+
+    void addCoupon(Coupon coupon);
+
+    List<Coupon> getCouponsFromBasket();
+
+    double getTotalValue();
+
+    void order();
+
+    double getBasePrice();
+
+    double getDiscountForCoupons();
+
+    void subscribe(Observer observer);
 }
