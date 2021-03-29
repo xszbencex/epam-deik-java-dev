@@ -9,15 +9,19 @@ import java.util.Optional;
 
 public class ProductServiceImpl implements ProductService {
 
-    private final List<Product> productList = List.of(
-            new Product.Builder()
-                    .withName("TV")
-                    .withNetPrice(new Money(100_000D, Currency.getInstance("HUF")))
-                    .build(),
-            new Product.Builder()
-                    .withName("Mobil")
-                    .withNetPrice(new Money(300_000D, Currency.getInstance("HUF")))
-                    .build());
+    private List<Product> productList;
+
+    public void init() {
+        productList = List.of(
+                new Product.Builder()
+                        .withName("TV")
+                        .withNetPrice(new Money(100_000D, Currency.getInstance("HUF")))
+                        .build(),
+                new Product.Builder()
+                        .withName("Mobil")
+                        .withNetPrice(new Money(300_000D, Currency.getInstance("HUF")))
+                        .build());
+    }
 
     @Override
     public List<Product> getProductList() {
@@ -30,6 +34,5 @@ public class ProductServiceImpl implements ProductService {
                 .filter(product -> product.getName().equals(productName))
                 .findFirst();
     }
-
 
 }

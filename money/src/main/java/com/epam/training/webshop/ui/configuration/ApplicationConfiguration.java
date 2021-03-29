@@ -1,8 +1,13 @@
 package com.epam.training.webshop.ui.configuration;
 
+import com.epam.training.webshop.core.cart.Cart;
 import com.epam.training.webshop.core.cart.grossprice.GrossPriceCalculator;
 import com.epam.training.webshop.core.cart.grossprice.impl.GrossPriceCalculatorImpl;
 import com.epam.training.webshop.core.cart.grossprice.impl.HungarianTaxGrossPriceCalculator;
+import com.epam.training.webshop.core.checkout.CheckoutService;
+import com.epam.training.webshop.core.finance.bank.Bank;
+import com.epam.training.webshop.core.finance.bank.staticbank.impl.StaticBank;
+import com.epam.training.webshop.core.finance.bank.staticbank.model.StaticExchangeRates;
 import com.epam.training.webshop.core.product.ProductService;
 import com.epam.training.webshop.core.product.ProductServiceImpl;
 import com.epam.training.webshop.ui.command.impl.AbstractCommand;
@@ -10,17 +15,17 @@ import com.epam.training.webshop.ui.command.impl.UserAddProductToCartCommand;
 import com.epam.training.webshop.ui.command.impl.UserCheckoutCartCommand;
 import com.epam.training.webshop.ui.command.impl.UserProductListCommand;
 import com.epam.training.webshop.ui.interpreter.CommandLineInterpreter;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 import java.util.*;
 
 @Configuration
-@ComponentScan("com.epam.training.webshop")
 public class ApplicationConfiguration {
 
-    @Bean
+    @Bean(initMethod = "init")
     public ProductService productService() {
         return new ProductServiceImpl();
     }
@@ -36,18 +41,30 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    public AbstractCommand userAddProductToCartCommand(ProductService productService) {
-        return new UserAddProductToCartCommand(productService);
+    public AbstractCommand userAddProductToCartCommand(ProductService productService, Cart cart) {
+        return new UserAddProductToCartCommand(productService, cart);
     }
 
     @Bean
-    public AbstractCommand userCheckoutCartCommand(GrossPriceCalculator grossPriceCalculator) {
-        return new UserCheckoutCartCommand(grossPriceCalculator);
+    public AbstractCommand userCheckoutCartCommand(CheckoutService checkoutService, Cart cart) {
+        return new UserCheckoutCartCommand(checkoutService, cart);
     }
 
     @Bean
     public CommandLineInterpreter commandLineInterpreter(Set<AbstractCommand> commands) {
         return new CommandLineInterpreter(System.in, System.out, commands);
+    }
+
+    @Bean
+    public Cart cart(Bank bank){
+        return  new Cart(bank);
+    }
+
+    @Bean
+    public Bank bank(){
+        return StaticBank.of(() -> new StaticExchangeRates.Builder()
+                .addRate("HUF", "USD", 0.0034, 249.3)
+                .build());
     }
 
 }
