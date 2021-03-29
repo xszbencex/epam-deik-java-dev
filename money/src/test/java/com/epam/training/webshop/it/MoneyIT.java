@@ -6,16 +6,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Currency;
 
-import com.epam.training.webshop.finance.bank.staticbank.impl.StaticBank;
-import com.epam.training.webshop.finance.bank.Bank;
-import com.epam.training.webshop.finance.bank.staticbank.model.StaticExchangeRates;
-import com.epam.training.webshop.finance.money.comparator.MoneyComparator;
+import com.epam.training.webshop.core.finance.bank.staticbank.impl.StaticBank;
+import com.epam.training.webshop.core.finance.bank.Bank;
+import com.epam.training.webshop.core.finance.bank.staticbank.model.StaticExchangeRates;
+import com.epam.training.webshop.core.finance.money.comparator.MoneyComparator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import com.epam.training.webshop.finance.money.Money;
+import com.epam.training.webshop.core.finance.money.Money;
 
 public class MoneyIT {
 
