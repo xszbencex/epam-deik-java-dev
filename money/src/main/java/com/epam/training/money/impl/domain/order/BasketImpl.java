@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.epam.training.money.impl.repository.OrderRepository;
 
+@Component
 public class BasketImpl implements Basket {
 
     private List<Observer> observers;
@@ -13,10 +17,10 @@ public class BasketImpl implements Basket {
     private List<Product> products;
     private List<Coupon> coupons;
 
+    @Autowired
     private OrderRepository orderRepository;
 
-    public BasketImpl(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
+    public BasketImpl() {
         products = new ArrayList<>();
         coupons = new ArrayList<>();
         observers = new LinkedList<>();
