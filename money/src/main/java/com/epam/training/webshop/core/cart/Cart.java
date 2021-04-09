@@ -25,6 +25,7 @@ public class Cart {
     }
 
     public void add(Product product) {
+        Objects.requireNonNull(product, "Product is a mandatory parameter for adding something to the cart");
         productList.add(product);
     }
 

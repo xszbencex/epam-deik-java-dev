@@ -24,6 +24,7 @@ public class Money {
     }
 
     public Money subtract(Money moneyToSubtract, Bank bank) {
+        Objects.requireNonNull(moneyToSubtract, "MoneyToSubtract is a mandatory parameter");
         Money convertedMoney = moneyToSubtract.to(this.currency, bank);
         return new Money(this.amount - convertedMoney.getAmount(), this.currency);
     }

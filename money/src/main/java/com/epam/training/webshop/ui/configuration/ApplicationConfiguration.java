@@ -9,16 +9,14 @@ import com.epam.training.webshop.core.finance.bank.Bank;
 import com.epam.training.webshop.core.finance.bank.staticbank.impl.StaticBank;
 import com.epam.training.webshop.core.finance.bank.staticbank.model.StaticExchangeRates;
 import com.epam.training.webshop.core.product.ProductService;
-import com.epam.training.webshop.core.product.ProductServiceImpl;
+import com.epam.training.webshop.core.product.impl.ProductServiceImpl;
 import com.epam.training.webshop.ui.command.impl.AbstractCommand;
 import com.epam.training.webshop.ui.command.impl.UserAddProductToCartCommand;
 import com.epam.training.webshop.ui.command.impl.UserCheckoutCartCommand;
 import com.epam.training.webshop.ui.command.impl.UserProductListCommand;
 import com.epam.training.webshop.ui.interpreter.CommandLineInterpreter;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 
 import java.util.*;
 

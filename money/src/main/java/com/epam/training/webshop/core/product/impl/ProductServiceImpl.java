@@ -1,6 +1,7 @@
-package com.epam.training.webshop.core.product;
+package com.epam.training.webshop.core.product.impl;
 
 import com.epam.training.webshop.core.finance.money.Money;
+import com.epam.training.webshop.core.product.ProductService;
 import com.epam.training.webshop.core.product.model.Product;
 
 import java.util.Currency;

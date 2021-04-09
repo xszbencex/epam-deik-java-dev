@@ -4,6 +4,7 @@ import com.epam.training.webshop.core.finance.bank.Bank;
 import com.epam.training.webshop.core.finance.money.Money;
 
 import java.util.Comparator;
+import java.util.Objects;
 
 public class MoneyComparator implements Comparator<Money> {
 
@@ -15,6 +16,8 @@ public class MoneyComparator implements Comparator<Money> {
 
     @Override
     public int compare(Money o1, Money o2) {
+        Objects.requireNonNull(o1, "o1 parameter cannot be null");
+        Objects.requireNonNull(o2, "o2 parameter cannot be null");
         return Double.compare(o1.getAmount(), o2.to(o1.getCurrency(), bank).getAmount());
     }
 }
