@@ -11,4 +11,5 @@ public interface ProductService {
 
     Optional<Product> getProductByName(String productName);
 
+    void createProduct(Product product);
 }

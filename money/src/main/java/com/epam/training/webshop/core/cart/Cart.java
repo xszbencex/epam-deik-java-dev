@@ -1,12 +1,14 @@
 package com.epam.training.webshop.core.cart;
 
+import com.epam.training.webshop.core.checkout.CheckoutObserver;
+import com.epam.training.webshop.core.checkout.model.Order;
 import com.epam.training.webshop.core.finance.bank.Bank;
 import com.epam.training.webshop.core.finance.money.Money;
 import com.epam.training.webshop.core.product.model.Product;
 
 import java.util.*;
 
-public class Cart {
+public class Cart implements CheckoutObserver {
 
     private List<Product> productList;
     private final Bank bank;
@@ -42,6 +44,11 @@ public class Cart {
     }
 
     @Override
+    public void handleOrder(Order order) {
+        productList = new LinkedList<>();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -53,4 +60,5 @@ public class Cart {
     public int hashCode() {
         return Objects.hash(productList, bank);
     }
+
 }

@@ -19,7 +19,8 @@ public class CheckoutServiceImplTest {
     public void testCheckoutShouldReturnWithAnOrderWhenCartIsNotNull() {
         // Given
         GrossPriceCalculator grossPriceCalculator = Mockito.mock(GrossPriceCalculator.class);
-        underTest = new CheckoutServiceImpl(grossPriceCalculator);
+        CheckoutObservable checkoutObservable = Mockito.mock(CheckoutObservable.class);
+        underTest = new CheckoutServiceImpl(grossPriceCalculator, checkoutObservable);
         Cart cart = Mockito.mock(Cart.class);
         List<Product> productList = Mockito.mock(List.class);
         Money netPrice = Mockito.mock(Money.class);
@@ -37,20 +38,22 @@ public class CheckoutServiceImplTest {
         Mockito.verify(cart).getProductList();
         Mockito.verify(cart).getAggregatedNetPrice();
         Mockito.verify(grossPriceCalculator).getAggregatedGrossPrice(cart);
-        Mockito.verifyNoMoreInteractions(grossPriceCalculator, cart, productList, netPrice, grossPrice);
+        Mockito.verify(checkoutObservable).broadcastOrder(expected);
+        Mockito.verifyNoMoreInteractions(grossPriceCalculator, cart, productList, netPrice, grossPrice, checkoutObservable);
     }
 
     @Test
     public void testCheckoutShouldThrowANullPointerExceptionWhenCartIsNull() {
         // Given
         GrossPriceCalculator grossPriceCalculator = Mockito.mock(GrossPriceCalculator.class);
-        underTest = new CheckoutServiceImpl(grossPriceCalculator);
+        CheckoutObservable checkoutObservable = Mockito.mock(CheckoutObservable.class);
+        underTest = new CheckoutServiceImpl(grossPriceCalculator, checkoutObservable);
 
         // When
         Assertions.assertThrows(NullPointerException.class, () -> underTest.checkout(null));
 
         // Then
-        Mockito.verifyNoMoreInteractions(grossPriceCalculator);
+        Mockito.verifyNoMoreInteractions(grossPriceCalculator, checkoutObservable);
     }
 
 }

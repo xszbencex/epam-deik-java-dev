@@ -89,4 +89,58 @@ public class ProductServiceImplTest {
         Assertions.assertEquals(expected, actual);
     }
 
+    @Test
+    public void testCreateProductShouldStoreTheGivenProductWhenTheInputProductIsValid() {
+        // Given
+        Product expected = new Product.Builder()
+                .withName("LG Monitor")
+                .withNetPrice(new Money(230_000D, Currency.getInstance("HUF")))
+                .build();
+
+        // When
+        underTest.createProduct(expected);
+
+        // Then
+        Product actual = underTest.getProductByName("LG Monitor").get();
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testCreateProductShouldThrowNullPointerExceptionWhenProductIsNull() {
+        // Given
+
+        // When
+        Assertions.assertThrows(NullPointerException.class, () -> underTest.createProduct(null));
+
+        // Then
+    }
+
+    @Test
+    public void testCreateProductShouldThrowNullPointerExceptionWhenProductNameIsNull() {
+        // Given
+        Product product = new Product.Builder()
+                .withName(null)
+                .withNetPrice(new Money(230_000D, Currency.getInstance("HUF")))
+                .build();
+
+        // When
+        Assertions.assertThrows(NullPointerException.class, () -> underTest.createProduct(product));
+
+        // Then
+    }
+
+    @Test
+    public void testCreateProductShouldThrowNullPointerExceptionWhenNetPriceIsNull() {
+        // Given
+        Product product = new Product.Builder()
+                .withName("LG Monitor")
+                .withNetPrice(null)
+                .build();
+
+        // When
+        Assertions.assertThrows(NullPointerException.class, () -> underTest.createProduct(product));
+
+        // Then
+    }
+
 }
