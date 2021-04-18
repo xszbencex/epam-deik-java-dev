@@ -1,4 +1,4 @@
-package com.epam.training.money.impl.presentation.cli.command;
+package com.epam.training.money.impl.command;
 
 import java.util.Optional;
 
