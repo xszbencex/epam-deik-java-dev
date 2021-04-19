@@ -3,7 +3,7 @@ package com.epam.training.webshop.core.cart;
 import com.epam.training.webshop.core.checkout.model.Order;
 import com.epam.training.webshop.core.finance.bank.Bank;
 import com.epam.training.webshop.core.finance.money.Money;
-import com.epam.training.webshop.core.product.model.Product;
+import com.epam.training.webshop.core.product.model.ProductDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -17,11 +17,11 @@ import static org.mockito.Mockito.times;
 public class CartTest {
 
     private static final Currency HUF = Currency.getInstance("HUF");
-    private static final Product TV = new Product.Builder()
+    private static final ProductDto TV = new ProductDto.Builder()
             .withName("TV")
             .withNetPrice(new Money(100_000D, HUF))
             .build();
-    private static final Product MOBIL = new Product.Builder()
+    private static final ProductDto MOBIL = new ProductDto.Builder()
             .withName("Mobil")
             .withNetPrice(new Money(300_000D, HUF))
             .build();
@@ -119,10 +119,10 @@ public class CartTest {
         // Given
         Bank bank = Mockito.mock(Bank.class);
         Cart underTest = Cart.of(bank);
-        List<Product> expected = List.of();
+        List<ProductDto> expected = List.of();
 
         // When
-        List<Product> actual = underTest.getProductList();
+        List<ProductDto> actual = underTest.getProductList();
 
         // Then
         Assertions.assertEquals(expected, actual);
@@ -134,10 +134,10 @@ public class CartTest {
         // Given
         Bank bank = Mockito.mock(Bank.class);
         Cart underTest = Cart.of(bank, TV, MOBIL);
-        List<Product> expected = List.of(TV, MOBIL);
+        List<ProductDto> expected = List.of(TV, MOBIL);
 
         // When
-        List<Product> actual = underTest.getProductList();
+        List<ProductDto> actual = underTest.getProductList();
 
         // Then
         Assertions.assertEquals(expected, actual);
@@ -149,12 +149,12 @@ public class CartTest {
         // Given
         Bank bank = Mockito.mock(Bank.class);
         Cart underTest = Cart.of(bank, TV, MOBIL);
-        List<Product> expected = List.of(TV, MOBIL);
+        List<ProductDto> expected = List.of(TV, MOBIL);
 
         // When
-        List<Product> productListFromTheCart = underTest.getProductList();
+        List<ProductDto> productListFromTheCart = underTest.getProductList();
         Assertions.assertThrows(UnsupportedOperationException.class, () -> productListFromTheCart.add(TV));
-        List<Product> actual = underTest.getProductList();
+        List<ProductDto> actual = underTest.getProductList();
 
         // Then
         Assertions.assertEquals(expected, actual);

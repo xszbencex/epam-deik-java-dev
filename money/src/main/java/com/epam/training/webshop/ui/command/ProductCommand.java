@@ -2,7 +2,7 @@ package com.epam.training.webshop.ui.command;
 
 import com.epam.training.webshop.core.finance.money.Money;
 import com.epam.training.webshop.core.product.ProductService;
-import com.epam.training.webshop.core.product.model.Product;
+import com.epam.training.webshop.core.product.model.ProductDto;
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -20,14 +20,14 @@ public class ProductCommand {
     }
 
     @ShellMethod(value = "Product List", key = "user product list")
-    public List<Product> listAvailableProducts() {
+    public List<ProductDto> listAvailableProducts() {
         return productService.getProductList();
     }
 
     @ShellMethodAvailability("isAvailable")
     @ShellMethod(value = "Admin create Product", key = "admin product create")
-    public Product createProduct(String name, double netPriceAmount, String netPriceCurrency) {
-        Product product = new Product.Builder()
+    public ProductDto createProduct(String name, double netPriceAmount, String netPriceCurrency) {
+        ProductDto product = new ProductDto.Builder()
                 .withName(name)
                 .withNetPrice(new Money(netPriceAmount, Currency.getInstance(netPriceCurrency)))
                 .build();

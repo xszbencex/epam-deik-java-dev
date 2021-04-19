@@ -4,7 +4,7 @@ import com.epam.training.webshop.core.cart.Cart;
 import com.epam.training.webshop.core.cart.grossprice.GrossPriceCalculator;
 import com.epam.training.webshop.core.checkout.model.Order;
 import com.epam.training.webshop.core.finance.money.Money;
-import com.epam.training.webshop.core.product.model.Product;
+import com.epam.training.webshop.core.product.model.ProductDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -22,7 +22,7 @@ public class CheckoutServiceImplTest {
         CheckoutObservable checkoutObservable = Mockito.mock(CheckoutObservable.class);
         underTest = new CheckoutServiceImpl(grossPriceCalculator, checkoutObservable);
         Cart cart = Mockito.mock(Cart.class);
-        List<Product> productList = Mockito.mock(List.class);
+        List<ProductDto> productList = Mockito.mock(List.class);
         Money netPrice = Mockito.mock(Money.class);
         Money grossPrice = Mockito.mock(Money.class);
         Mockito.when(cart.getProductList()).thenReturn(productList);

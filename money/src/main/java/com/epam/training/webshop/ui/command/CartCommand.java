@@ -3,10 +3,9 @@ package com.epam.training.webshop.ui.command;
 import com.epam.training.webshop.core.cart.Cart;
 import com.epam.training.webshop.core.checkout.CheckoutService;
 import com.epam.training.webshop.core.product.ProductService;
-import com.epam.training.webshop.core.product.model.Product;
+import com.epam.training.webshop.core.product.model.ProductDto;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
-import org.springframework.shell.standard.ShellOption;
 
 import java.util.Optional;
 
@@ -26,7 +25,7 @@ public class CartCommand {
     @ShellMethod(value = "Add Product to Cart", key = "user cart addProduct")
     public String addProductToCart(String productName) {
         String returnString = productName + " is added to your cart";
-        Optional<Product> optionalProduct = productService.getProductByName(productName);
+        Optional<ProductDto> optionalProduct = productService.getProductByName(productName);
 
         if(returnString.isEmpty()) {
             returnString = productName + " is not found as a Product";
