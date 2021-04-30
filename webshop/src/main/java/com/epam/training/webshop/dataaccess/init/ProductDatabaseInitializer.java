@@ -4,13 +4,14 @@ import javax.annotation.PostConstruct;
 
 import java.util.List;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.epam.training.webshop.dataaccess.dao.ProductDao;
 import com.epam.training.webshop.dataaccess.projection.ProductProjection;
-import com.epam.training.webshop.domain.order.SimpleProduct;
 
 @Component
+@Profile("! prod")
 public class ProductDatabaseInitializer {
 
     private ProductDao productDao;
