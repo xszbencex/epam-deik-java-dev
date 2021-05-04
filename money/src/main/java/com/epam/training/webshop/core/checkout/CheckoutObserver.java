@@ -1,9 +1,9 @@
 package com.epam.training.webshop.core.checkout;
 
-import com.epam.training.webshop.core.checkout.model.Order;
+import com.epam.training.webshop.core.checkout.model.OrderDto;
 
 public interface CheckoutObserver {
 
-    void handleOrder(Order order);
+    void handleOrder(OrderDto orderDto);
 
 }

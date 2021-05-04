@@ -2,7 +2,7 @@ package com.epam.training.webshop.core.checkout.impl;
 
 import com.epam.training.webshop.core.cart.Cart;
 import com.epam.training.webshop.core.cart.grossprice.GrossPriceCalculator;
-import com.epam.training.webshop.core.checkout.model.Order;
+import com.epam.training.webshop.core.checkout.model.OrderDto;
 import com.epam.training.webshop.core.finance.money.Money;
 import com.epam.training.webshop.core.product.model.ProductDto;
 import org.junit.jupiter.api.Assertions;
@@ -22,16 +22,20 @@ public class CheckoutServiceImplTest {
         CheckoutObservable checkoutObservable = Mockito.mock(CheckoutObservable.class);
         underTest = new CheckoutServiceImpl(grossPriceCalculator, checkoutObservable);
         Cart cart = Mockito.mock(Cart.class);
-        List<ProductDto> productList = Mockito.mock(List.class);
+        ProductDto productDto = new ProductDto.Builder()
+                .withName("TV")
+                .withNetPrice(new Money(100, Currency.getInstance("HUF")))
+                .build();
+        List<ProductDto> productList = List.of(productDto);
         Money netPrice = Mockito.mock(Money.class);
         Money grossPrice = Mockito.mock(Money.class);
         Mockito.when(cart.getProductList()).thenReturn(productList);
         Mockito.when(cart.getAggregatedNetPrice()).thenReturn(netPrice);
         Mockito.when(grossPriceCalculator.getAggregatedGrossPrice(cart)).thenReturn(grossPrice);
-        Order expected = new Order(productList, netPrice, grossPrice);
+        OrderDto expected = new OrderDto(productList, netPrice, grossPrice);
 
         // When
-        Order actual = underTest.checkout(cart);
+        OrderDto actual = underTest.checkout(cart);
 
         // Then
         Assertions.assertEquals(expected, actual);
@@ -39,7 +43,7 @@ public class CheckoutServiceImplTest {
         Mockito.verify(cart).getAggregatedNetPrice();
         Mockito.verify(grossPriceCalculator).getAggregatedGrossPrice(cart);
         Mockito.verify(checkoutObservable).broadcastOrder(expected);
-        Mockito.verifyNoMoreInteractions(grossPriceCalculator, cart, productList, netPrice, grossPrice, checkoutObservable);
+        Mockito.verifyNoMoreInteractions(grossPriceCalculator, cart, netPrice, grossPrice, checkoutObservable);
     }
 
     @Test

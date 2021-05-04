@@ -1,7 +1,7 @@
 package com.epam.training.webshop.core.checkout.impl;
 
 import com.epam.training.webshop.core.checkout.CheckoutObserver;
-import com.epam.training.webshop.core.checkout.model.Order;
+import com.epam.training.webshop.core.checkout.model.OrderDto;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -15,8 +15,8 @@ public class CheckoutObservable {
         this.observers = observers;
     }
 
-    public void broadcastOrder(Order order) {
-        observers.forEach(o -> o.handleOrder(order));
+    public void broadcastOrder(OrderDto orderDto) {
+        observers.forEach(o -> o.handleOrder(orderDto));
     }
 
 }
