@@ -18,6 +18,10 @@ public class ProductInitializer {
 
     private ProductRepository repository;
 
+    public ProductInitializer(ProductRepository repository) {
+        this.repository = repository;
+    }
+
     @PostConstruct
     public void initProducts() {
         products.forEach(repository::save);
