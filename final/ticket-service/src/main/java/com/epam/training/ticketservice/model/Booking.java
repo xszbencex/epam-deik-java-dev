@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -24,7 +25,9 @@ public class Booking {
     @OneToOne
     private Screening screening;
 
+    @Column(nullable = false)
     private Integer reservedRow;
 
+    @Column(nullable = false)
     private Integer reservedColumn;
 }

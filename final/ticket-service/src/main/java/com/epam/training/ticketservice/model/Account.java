@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -18,7 +19,13 @@ public class Account {
     @Id
     private String username;
 
+    @Column(nullable = false)
     private String password;
 
     private Boolean admin;
+
+    public Account(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
 }

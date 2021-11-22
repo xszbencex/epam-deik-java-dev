@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -18,7 +19,9 @@ public class Room {
     @Id
     private String name;
 
+    @Column(nullable = false)
     private Integer rowCount;
 
+    @Column(nullable = false)
     private Integer columnCount;
 }
