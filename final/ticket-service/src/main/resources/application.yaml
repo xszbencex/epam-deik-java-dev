@@ -1,0 +1,15 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:mysql://localhost:3306/ticket-service
+    username: root
+    password: admin
+
+  banner:
+    location: banner.txt
+
+ticket-service:
+  price:
+    base: 1500
