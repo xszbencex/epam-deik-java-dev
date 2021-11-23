@@ -1,5 +1,6 @@
 package com.epam.training.ticketservice.cli;
 
+import com.epam.training.ticketservice.model.Account;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellComponent;
@@ -29,8 +30,7 @@ public class PriceCommandHandler {
     }
 
     public Availability checkAdminAvailability() {
-        return this.accountCommandHandler.getLoggedInAccount().isPresent()
-                && this.accountCommandHandler.getLoggedInAccount().get().getAdmin()
+        return this.accountCommandHandler.getLoggedInAccount().filter(Account::getAdmin).isPresent()
                 ? Availability.available()
                 : Availability.unavailable("this command requires admin privileges.");
     }

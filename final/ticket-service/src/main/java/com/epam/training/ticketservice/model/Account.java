@@ -22,7 +22,7 @@ public class Account {
     @Column(nullable = false)
     private String password;
 
-    private Boolean admin;
+    private Boolean admin = false;
 
     public Account(String username, String password) {
         this.username = username;

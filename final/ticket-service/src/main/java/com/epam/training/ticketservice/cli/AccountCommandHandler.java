@@ -2,6 +2,7 @@ package com.epam.training.ticketservice.cli;
 
 import com.epam.training.ticketservice.model.Account;
 import com.epam.training.ticketservice.service.AccountService;
+import com.epam.training.ticketservice.service.exception.UsernameTakenException;
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -24,15 +25,24 @@ public class AccountCommandHandler {
     }
 
     @ShellMethod(value = "Sign up an account", key = {"sign up", "su"})
-    public void signUp(final String username, final String password) {
-        accountService.createAccount();
+    public String signUp(final String username, final String password) {
+        try {
+            this.accountService.createAccount(username, password);
+            return String.format("Successfully signed up as '%s'", username);
+        } catch (UsernameTakenException e) {
+            return e.getMessage();
+        }
     }
 
     @ShellMethod(value = "Sing in with credentials", key = {"sign in", "si"})
     public String signIn(final String username, final String password) {
-        if ("admin".equals(username) && "admin".equals(password)) {
+        final Optional<Account> account = this.accountService.getAccountById(username);
+        if (account.filter(acc -> !acc.getAdmin()).isPresent()) {
             this.loggedInAccount = Optional.of(new Account(username, password));
             return "Successfully signed in!";
+        } else if (account.filter(Account::getAdmin).isPresent()) {
+            return String.format("'%s' is a privileged user."
+                    + "Privileged users must log in with the 'sign up privileged' command.", username);
         } else {
             return "Login failed due to incorrect credentials";
         }
@@ -40,9 +50,12 @@ public class AccountCommandHandler {
 
     @ShellMethod(value = "Sign in with credentials to admin account", key = {"sign in privileged", "sip"})
     public String signInPrivileged(final String username, final String password) {
-        if ("admin".equals(username) && "admin".equals(password)) {
-            this.loggedInAccount = Optional.of(new Account("admin", "admin", true));
+        final Optional<Account> account = this.accountService.getAccountById(username);
+        if (account.filter(Account::getAdmin).isPresent()) {
+            this.loggedInAccount = Optional.of(new Account(username, password, true));
             return "Successfully signed in!";
+        } else if (account.filter(acc -> !acc.getAdmin()).isPresent()) {
+            return String.format("'%s' is not a privileged user", username);
         } else {
             return "Login failed due to incorrect credentials";
         }
@@ -58,7 +71,9 @@ public class AccountCommandHandler {
     @ShellMethod(value = "Query signed in account info", key = {"describe account", "da"})
     @ShellMethodAvailability(value = "checkLoggedInAvailability")
     public String describeAccount() {
-        return String.format("Signed in with privileged account '%s'", loggedInAccount.orElseThrow().getUsername());
+        return String.format("Signed in with%s account '%s'",
+                this.loggedInAccount.filter(Account::getAdmin).isPresent() ? " privileged" : "",
+                loggedInAccount.orElseThrow().getUsername());
     }
 
     public Availability checkLoggedInAvailability() {

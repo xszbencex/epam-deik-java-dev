@@ -1,5 +1,6 @@
 package com.epam.training.ticketservice.cli;
 
+import com.epam.training.ticketservice.model.Account;
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -42,8 +43,7 @@ public class RoomCommandHandler {
     }
 
     public Availability checkAdminAvailability() {
-        return this.accountCommandHandler.getLoggedInAccount().isPresent()
-                && this.accountCommandHandler.getLoggedInAccount().get().getAdmin()
+        return this.accountCommandHandler.getLoggedInAccount().filter(Account::getAdmin).isPresent()
                 ? Availability.available()
                 : Availability.unavailable("this command requires admin privileges.");
     }
