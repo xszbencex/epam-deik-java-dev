@@ -1,7 +1,6 @@
 package com.epam.training.ticketservice.service;
 
 import com.epam.training.ticketservice.model.Movie;
-import com.epam.training.ticketservice.model.Room;
 import com.epam.training.ticketservice.model.Screening;
 import com.epam.training.ticketservice.model.config.ScreeningId;
 import com.epam.training.ticketservice.repositry.ScreeningRepository;
@@ -40,31 +39,31 @@ public class ScreeningService {
         return this.screeningRepository.findAll();
     }
 
-    public void createScreening(String movieName, String roomName, LocalDateTime startingAt)
-            throws NoSuchItemException, ScreeningOverlapException {
-        final Movie movie = this.movieService.getMovieById(movieName).orElseThrow(() ->
-                new NoSuchItemException("There is no movie with name: " + movieName));
-        if (this.roomService.getRoomById(roomName).isEmpty()) {
-            throw new NoSuchItemException("There is no room with name: " + roomName);
-        } else if (isOverlappingScreening(roomName, movie.getLength(), startingAt)) {
+    public void createScreening(Screening screening) throws NoSuchItemException, ScreeningOverlapException {
+        final Movie movie = this.movieService.getMovieById(screening.getMovieName()).orElseThrow(() ->
+                new NoSuchItemException("There is no movie with name: " + screening.getMovieName()));
+        if (this.roomService.getRoomById(screening.getRoomName()).isEmpty()) {
+            throw new NoSuchItemException("There is no room with name: " + screening.getRoomName());
+        } else if (isOverlappingScreening(screening.getRoomName(), movie.getLength(), screening.getStartingAt())) {
             throw new ScreeningOverlapException("There is an overlapping screening");
-        } else if (isOverlappingBreak(roomName, startingAt)) {
+        } else if (isOverlappingBreak(screening.getRoomName(), screening.getStartingAt())) {
             throw new ScreeningOverlapException(
                     "This would start in the break period after another screening in this room");
         }
-        this.screeningRepository.save(new Screening(movieName, roomName, startingAt));
+        this.screeningRepository.save(screening);
     }
 
-    public void deleteScreening(String movieName, String roomName, LocalDateTime startingAt)
-            throws NoSuchItemException {
-        this.screeningRepository.findById(new ScreeningId(movieName, roomName, startingAt))
+    public void deleteScreening(ScreeningId screeningId) throws NoSuchItemException {
+        this.screeningRepository.findById(screeningId)
                 .map(screening -> {
                     this.screeningRepository.delete(screening);
                     return screening;
                 })
                 .orElseThrow(() -> new NoSuchItemException(
                         String.format("There is no screening with %s movie name, %s room name, starting at %s",
-                                movieName, roomName, startingAt.toString())));
+                                screeningId.getMovieName(),
+                                screeningId.getRoomName(),
+                                screeningId.getStartingAt().toString())));
     }
 
     private boolean isOverlappingScreening(String roomName, Integer movieLength, LocalDateTime startingAt) {

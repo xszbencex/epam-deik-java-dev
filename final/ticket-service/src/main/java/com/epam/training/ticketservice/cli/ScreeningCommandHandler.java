@@ -3,6 +3,7 @@ package com.epam.training.ticketservice.cli;
 import com.epam.training.ticketservice.model.Account;
 import com.epam.training.ticketservice.model.Movie;
 import com.epam.training.ticketservice.model.Screening;
+import com.epam.training.ticketservice.model.config.ScreeningId;
 import com.epam.training.ticketservice.service.MovieService;
 import com.epam.training.ticketservice.service.ScreeningService;
 import com.epam.training.ticketservice.service.exception.NoSuchItemException;
@@ -17,6 +18,8 @@ import java.util.List;
 
 @ShellComponent
 public class ScreeningCommandHandler {
+
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     private final AccountCommandHandler accountCommandHandler;
     private final ScreeningService screeningService;
@@ -34,8 +37,8 @@ public class ScreeningCommandHandler {
     @ShellMethodAvailability(value = "checkAdminAvailability")
     public String createScreening(final String movieName, final String roomName, final String startingAt) {
         try {
-            this.screeningService.createScreening(movieName, roomName, LocalDateTime.parse(startingAt,
-                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+            this.screeningService.createScreening(
+                    new Screening(movieName, roomName, LocalDateTime.parse(startingAt, dateTimeFormatter)));
             return String.format("Screening to '%s' in %s at %s successfully created.",
                     movieName, roomName, startingAt);
         } catch (Exception e) {
@@ -47,7 +50,8 @@ public class ScreeningCommandHandler {
     @ShellMethodAvailability(value = "checkAdminAvailability")
     public String deleteScreening(final String movieName, final String roomName, final String startingAt) {
         try {
-            this.screeningService.deleteScreening(movieName, roomName, LocalDateTime.parse(startingAt));
+            this.screeningService.deleteScreening(
+                    new ScreeningId(movieName, roomName, LocalDateTime.parse(startingAt, dateTimeFormatter)));
             return String.format("Screening to '%s' in %s at %s successfully deleted.",
                     movieName, roomName, startingAt);
         } catch (NoSuchItemException e) {
@@ -69,7 +73,7 @@ public class ScreeningCommandHandler {
                         movie.getGenre(),
                         movie.getLength(),
                         screening.getRoomName(),
-                        screening.getStartingAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))));
+                        screening.getStartingAt().format(dateTimeFormatter)));
             });
             stringBuilder.deleteCharAt(stringBuilder.length() - 1);
             return stringBuilder.toString();

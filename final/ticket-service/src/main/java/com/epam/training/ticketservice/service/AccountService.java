@@ -16,11 +16,11 @@ public class AccountService {
         this.accountRepository = accountRepository;
     }
 
-    public void createAccount(final String username, final String password) throws UsernameTakenException {
-        if (this.accountRepository.findById(username).isPresent()) {
+    public void createAccount(Account account) throws UsernameTakenException {
+        if (this.accountRepository.findById(account.getUsername()).isPresent()) {
             throw new UsernameTakenException();
         } else {
-            this.accountRepository.save(new Account(username, password));
+            this.accountRepository.save(account);
         }
     }
 

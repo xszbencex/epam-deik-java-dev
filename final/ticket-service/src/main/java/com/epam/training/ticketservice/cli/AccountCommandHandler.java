@@ -27,7 +27,7 @@ public class AccountCommandHandler {
     @ShellMethod(value = "Sign up an account", key = {"sign up", "su"})
     public String signUp(final String username, final String password) {
         try {
-            this.accountService.createAccount(username, password);
+            this.accountService.createAccount(new Account(username, password));
             return String.format("Successfully signed up as '%s'", username);
         } catch (UsernameTakenException e) {
             return e.getMessage();

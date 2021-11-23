@@ -25,14 +25,14 @@ public class MovieService {
         return this.movieRepository.findAll();
     }
 
-    public void createMovie(String name, String genre, Integer length) {
-        this.movieRepository.save(new Movie(name, genre, length));
+    public void createMovie(Movie movie) {
+        this.movieRepository.save(movie);
     }
 
-    public void updateMovie(String name, String genre, Integer length) throws NoSuchItemException {
-        this.movieRepository.findById(name)
-                .map(movie -> this.movieRepository.save(new Movie(name, genre, length)))
-                .orElseThrow(() -> new NoSuchItemException("There is no movie with name: " + name));
+    public void updateMovie(Movie movie) throws NoSuchItemException {
+        this.movieRepository.findById(movie.getName())
+                .map(currentMovie -> this.movieRepository.save(movie))
+                .orElseThrow(() -> new NoSuchItemException("There is no movie with name: " + movie.getName()));
     }
 
     public void deleteMovie(String name) throws NoSuchItemException {

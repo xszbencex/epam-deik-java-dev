@@ -25,7 +25,7 @@ public class RoomCommandHandler {
     @ShellMethod(value = "Add a room to database", key = {"create room", "cr"})
     @ShellMethodAvailability(value = "checkAdminAvailability")
     public String createRoom(final String name, final Integer rowCount, final Integer columnCount) {
-        this.roomService.createRoom(name, rowCount, columnCount);
+        this.roomService.createRoom(new Room(name, rowCount, columnCount));
         return String.format("Room with name '%s' successfully created.", name);
     }
 
@@ -33,7 +33,7 @@ public class RoomCommandHandler {
     @ShellMethodAvailability(value = "checkAdminAvailability")
     public String updateRoom(final String name, final Integer rowCount, final Integer columnCount) {
         try {
-            this.roomService.updateRoom(name, rowCount, columnCount);
+            this.roomService.updateRoom(new Room(name, rowCount, columnCount));
             return String.format("Room with name '%s' successfully updated.", name);
         } catch (NoSuchItemException e) {
             return e.getMessage();

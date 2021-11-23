@@ -25,7 +25,7 @@ public class MovieCommandHandler {
     @ShellMethod(value = "Add a movie to database", key = {"create movie", "cm"})
     @ShellMethodAvailability(value = "checkAdminAvailability")
     public String createMovie(final String name, final String genre, final int length) {
-        this.movieService.createMovie(name, genre, length);
+        this.movieService.createMovie(new Movie(name, genre, length));
         return String.format("Movie with name '%s' successfully created.", name);
     }
 
@@ -33,7 +33,7 @@ public class MovieCommandHandler {
     @ShellMethodAvailability(value = "checkAdminAvailability")
     public String updateMovie(final String name, final String genre, final int length) {
         try {
-            this.movieService.updateMovie(name, genre, length);
+            this.movieService.updateMovie(new Movie(name, genre, length));
             return String.format("Movie with name '%s' successfully updated.", name);
         } catch (NoSuchItemException e) {
             return e.getMessage();
