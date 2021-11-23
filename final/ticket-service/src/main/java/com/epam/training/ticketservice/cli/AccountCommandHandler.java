@@ -39,9 +39,9 @@ public class AccountCommandHandler {
         final Optional<Account> account = this.accountService.getAccountById(username);
         if (account.filter(acc -> !acc.getAdmin()).isPresent()) {
             this.loggedInAccount = Optional.of(new Account(username, password));
-            return "Successfully signed in!";
+            return "Successfully signed in";
         } else if (account.filter(Account::getAdmin).isPresent()) {
-            return String.format("'%s' is a privileged user."
+            return String.format("'%s' is a privileged user. "
                     + "Privileged users must log in with the 'sign up privileged' command.", username);
         } else {
             return "Login failed due to incorrect credentials";
@@ -51,7 +51,7 @@ public class AccountCommandHandler {
     @ShellMethod(value = "Sign in with credentials to admin account", key = {"sign in privileged", "sip"})
     public String signInPrivileged(final String username, final String password) {
         final Optional<Account> account = this.accountService.getAccountById(username);
-        if (account.filter(Account::getAdmin).isPresent()) {
+        if (account.filter(Account::getAdmin).isPresent() && password.equals(account.get().getPassword())) {
             this.loggedInAccount = Optional.of(new Account(username, password, true));
             return "Successfully signed in!";
         } else if (account.filter(acc -> !acc.getAdmin()).isPresent()) {
@@ -69,11 +69,14 @@ public class AccountCommandHandler {
     }
 
     @ShellMethod(value = "Query signed in account info", key = {"describe account", "da"})
-    @ShellMethodAvailability(value = "checkLoggedInAvailability")
     public String describeAccount() {
-        return String.format("Signed in with%s account '%s'",
-                this.loggedInAccount.filter(Account::getAdmin).isPresent() ? " privileged" : "",
-                loggedInAccount.orElseThrow().getUsername());
+        if (this.loggedInAccount.isPresent()) {
+            return String.format("Signed in with%s account '%s'",
+                    this.loggedInAccount.filter(Account::getAdmin).isPresent() ? " privileged" : "",
+                    loggedInAccount.orElseThrow().getUsername());
+        } else {
+            return "You are not signed in";
+        }
     }
 
     public Availability checkLoggedInAvailability() {

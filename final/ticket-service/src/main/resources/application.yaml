@@ -11,5 +11,7 @@ spring:
     location: banner.txt
 
 ticket-service:
+  screening:
+    break-length: 10
   price:
     base: 1500

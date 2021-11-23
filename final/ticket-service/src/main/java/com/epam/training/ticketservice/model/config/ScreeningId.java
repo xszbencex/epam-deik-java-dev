@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,5 +16,5 @@ public class ScreeningId implements Serializable {
 
     private String roomName;
 
-    private String startingAt;
+    private LocalDateTime startingAt;
 }
