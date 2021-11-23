@@ -15,3 +15,5 @@ ticket-service:
     break-length: 10
   price:
     base: 1500
+  date-time:
+    pattern: yyyy-MM-dd HH:mm

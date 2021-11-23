@@ -57,11 +57,7 @@ public class MovieCommandHandler {
         if (movies.isEmpty()) {
             return "There are no movies at the moment";
         } else {
-            StringBuilder stringBuilder = new StringBuilder();
-            movies.forEach(movie -> stringBuilder.append(String.format("%s (%s, %s minutes)\n",
-                    movie.getName(), movie.getGenre(), movie.getLength())));
-            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-            return stringBuilder.toString();
+            return movieService.formattedMovieList(movies);
         }
     }
 

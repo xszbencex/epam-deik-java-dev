@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +19,9 @@ public class ScreeningService {
 
     @Value("${ticket-service.screening.break-length}")
     private int breakLength;
+
+    @Value("${ticket-service.date-time.pattern}")
+    private String dateTimePattern;
 
     private final ScreeningRepository screeningRepository;
     private final MovieService movieService;
@@ -64,6 +68,19 @@ public class ScreeningService {
                                 screeningId.getMovieName(),
                                 screeningId.getRoomName(),
                                 screeningId.getStartingAt().toString())));
+    }
+
+    public String formattedScreeningList(List<Screening> screenings) {
+        StringBuilder stringBuilder = new StringBuilder();
+        screenings.forEach(screening -> {
+            final Movie movie = this.movieService.getMovieById(screening.getMovieName()).orElseThrow();
+            stringBuilder.append(String.format("%s, screened in room %s, at %s\n",
+                    movie,
+                    screening.getRoomName(),
+                    screening.getStartingAt().format(DateTimeFormatter.ofPattern(dateTimePattern))));
+        });
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        return stringBuilder.toString();
     }
 
     private boolean isOverlappingScreening(String roomName, Integer movieLength, LocalDateTime startingAt) {

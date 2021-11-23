@@ -37,7 +37,7 @@ public class AccountCommandHandler {
     @ShellMethod(value = "Sing in with credentials", key = {"sign in", "si"})
     public String signIn(final String username, final String password) {
         final Optional<Account> account = this.accountService.getAccountById(username);
-        if (account.filter(acc -> !acc.getAdmin()).isPresent()) {
+        if (account.filter(acc -> !acc.getAdmin()).isPresent() && password.equals(account.get().getPassword())) {
             this.loggedInAccount = Optional.of(new Account(username, password));
             return "Successfully signed in";
         } else if (account.filter(Account::getAdmin).isPresent()) {

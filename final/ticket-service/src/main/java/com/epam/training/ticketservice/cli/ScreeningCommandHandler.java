@@ -1,12 +1,12 @@
 package com.epam.training.ticketservice.cli;
 
 import com.epam.training.ticketservice.model.Account;
-import com.epam.training.ticketservice.model.Movie;
 import com.epam.training.ticketservice.model.Screening;
 import com.epam.training.ticketservice.model.config.ScreeningId;
-import com.epam.training.ticketservice.service.MovieService;
 import com.epam.training.ticketservice.service.ScreeningService;
 import com.epam.training.ticketservice.service.exception.NoSuchItemException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -19,18 +19,16 @@ import java.util.List;
 @ShellComponent
 public class ScreeningCommandHandler {
 
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    @Value("${ticket-service.date-time.pattern}")
+    private String dateTimePattern;
 
     private final AccountCommandHandler accountCommandHandler;
     private final ScreeningService screeningService;
-    private final MovieService movieService;
 
     public ScreeningCommandHandler(AccountCommandHandler accountCommandHandler,
-                                   ScreeningService screeningService,
-                                   MovieService movieService) {
+                                   ScreeningService screeningService) {
         this.accountCommandHandler = accountCommandHandler;
         this.screeningService = screeningService;
-        this.movieService = movieService;
     }
 
     @ShellMethod(value = "Add a screening to database", key = {"create screening", "cs"})
@@ -38,7 +36,8 @@ public class ScreeningCommandHandler {
     public String createScreening(final String movieName, final String roomName, final String startingAt) {
         try {
             this.screeningService.createScreening(
-                    new Screening(movieName, roomName, LocalDateTime.parse(startingAt, dateTimeFormatter)));
+                    new Screening(movieName, roomName,LocalDateTime.parse(startingAt,
+                            DateTimeFormatter.ofPattern(dateTimePattern))));
             return String.format("Screening to '%s' in %s at %s successfully created.",
                     movieName, roomName, startingAt);
         } catch (Exception e) {
@@ -51,7 +50,8 @@ public class ScreeningCommandHandler {
     public String deleteScreening(final String movieName, final String roomName, final String startingAt) {
         try {
             this.screeningService.deleteScreening(
-                    new ScreeningId(movieName, roomName, LocalDateTime.parse(startingAt, dateTimeFormatter)));
+                    new ScreeningId(movieName, roomName, LocalDateTime.parse(startingAt,
+                            DateTimeFormatter.ofPattern(dateTimePattern))));
             return String.format("Screening to '%s' in %s at %s successfully deleted.",
                     movieName, roomName, startingAt);
         } catch (NoSuchItemException e) {
@@ -65,18 +65,7 @@ public class ScreeningCommandHandler {
         if (screenings.isEmpty()) {
             return "There are no screenings at the moment";
         } else {
-            StringBuilder stringBuilder = new StringBuilder();
-            screenings.forEach(screening -> {
-                final Movie movie = this.movieService.getMovieById(screening.getMovieName()).orElseThrow();
-                stringBuilder.append(String.format("%s (%s, %s minutes), screened in room %s, at %s\n",
-                        movie.getName(),
-                        movie.getGenre(),
-                        movie.getLength(),
-                        screening.getRoomName(),
-                        screening.getStartingAt().format(dateTimeFormatter)));
-            });
-            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-            return stringBuilder.toString();
+            return screeningService.formattedScreeningList(screenings);
         }
     }
 

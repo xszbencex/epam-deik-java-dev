@@ -11,7 +11,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Getter
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -25,4 +24,10 @@ public class Movie {
 
     @Column(nullable = false)
     private Integer length;
+
+    @Override
+    public String toString() {
+        return String.format("%s (%s, %s minutes)",
+                name, genre, length);
+    }
 }

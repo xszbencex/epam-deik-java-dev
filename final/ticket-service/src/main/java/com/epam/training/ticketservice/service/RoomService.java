@@ -43,4 +43,11 @@ public class RoomService {
                 })
                 .orElseThrow(() -> new NoSuchItemException("There is no room with name: " + name));
     }
+
+    public String formattedRoomList(List<Room> rooms) {
+        StringBuilder stringBuilder = new StringBuilder();
+        rooms.forEach(room -> stringBuilder.append(room.toString()).append('\n'));
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        return stringBuilder.toString();
+    }
 }

@@ -26,8 +26,14 @@ public class Booking {
     private Screening screening;
 
     @Column(nullable = false)
-    private Integer reservedRow;
+    private Integer reservedSeatRow;
 
     @Column(nullable = false)
-    private Integer reservedColumn;
+    private Integer reservedSeatColumn;
+
+    @Column(nullable = false)
+    private String customerUsername;
+
+    @Column(nullable = false)
+    private Long price;
 }

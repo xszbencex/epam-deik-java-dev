@@ -57,14 +57,7 @@ public class RoomCommandHandler {
         if (rooms.isEmpty()) {
             return "There are no rooms at the moment";
         } else {
-            StringBuilder stringBuilder = new StringBuilder();
-            rooms.forEach(room -> stringBuilder.append(String.format("Room %s with %s seats, %s rows and %s columns\n",
-                    room.getName(),
-                    room.getRowCount() * room.getColumnCount(),
-                    room.getRowCount(),
-                    room.getColumnCount())));
-            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-            return stringBuilder.toString();
+            return roomService.formattedRoomList(rooms);
         }
     }
 

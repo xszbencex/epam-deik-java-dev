@@ -10,7 +10,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Getter
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -24,4 +23,10 @@ public class Room {
 
     @Column(nullable = false)
     private Integer columnCount;
+
+    @Override
+    public String toString() {
+        return String.format("Room %s with %s seats, %s rows and %s columns",
+                name, rowCount * columnCount, rowCount, columnCount);
+    }
 }

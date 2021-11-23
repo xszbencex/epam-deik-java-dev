@@ -43,4 +43,11 @@ public class MovieService {
                 })
                 .orElseThrow(() -> new NoSuchItemException("There is no movie with name: " + name));
     }
+
+    public String formattedMovieList(List<Movie> movies) {
+        StringBuilder stringBuilder = new StringBuilder();
+        movies.forEach(movie -> stringBuilder.append(movie.toString()).append("\n"));
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        return stringBuilder.toString();
+    }
 }
