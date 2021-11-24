@@ -9,7 +9,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.ManyToOne;
 
 @Getter
 @ToString
@@ -22,7 +24,12 @@ public class Booking {
     @GeneratedValue
     private Long id;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumns({
+            @JoinColumn(name="moive_fk", referencedColumnName="movie_fk", nullable = false),
+            @JoinColumn(name="room_fk", referencedColumnName="room_fk", nullable = false),
+            @JoinColumn(name="starting_at", referencedColumnName="starting_at", nullable = false)
+    })
     private Screening screening;
 
     @Column(nullable = false)
@@ -31,8 +38,9 @@ public class Booking {
     @Column(nullable = false)
     private Integer reservedSeatColumn;
 
-    @Column(nullable = false)
-    private String customerUsername;
+    @ManyToOne
+    @JoinColumn(name = "account_fk", nullable = false)
+    private Account account;
 
     @Column(nullable = false)
     private Long price;

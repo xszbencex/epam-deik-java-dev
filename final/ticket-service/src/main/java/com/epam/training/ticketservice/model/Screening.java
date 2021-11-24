@@ -4,27 +4,25 @@ import com.epam.training.ticketservice.model.config.ScreeningId;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import java.time.LocalDateTime;
+import java.io.Serializable;
+import java.time.format.DateTimeFormatter;
 
 @Getter
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@IdClass(ScreeningId.class)
-public class Screening {
+public class Screening implements Serializable {
 
-    @Id
-    private String movieName;
+    @EmbeddedId
+    private ScreeningId id;
 
-    @Id
-    private String roomName;
-
-    @Id
-    private LocalDateTime startingAt;
+    @Override
+    public String toString() {
+        return String.format("%s (%s, %s minutes), screened in room %s, at %s",
+                id.getMovie().getName(), id.getMovie().getGenre(), id.getMovie().getLength(), id.getRoom().getName(),
+                id.getStartingAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+    }
 }

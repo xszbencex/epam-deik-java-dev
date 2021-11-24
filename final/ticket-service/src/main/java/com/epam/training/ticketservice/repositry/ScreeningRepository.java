@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface ScreeningRepository extends JpaRepository<Screening, ScreeningId> {
 
-    List<Screening> findScreeningsByRoomName(String movieName);
+    List<Screening> findScreeningsById_Room_Name(String movieName);
 }

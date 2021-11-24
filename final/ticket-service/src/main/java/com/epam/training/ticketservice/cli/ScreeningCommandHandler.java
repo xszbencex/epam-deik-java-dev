@@ -2,11 +2,9 @@ package com.epam.training.ticketservice.cli;
 
 import com.epam.training.ticketservice.model.Account;
 import com.epam.training.ticketservice.model.Screening;
-import com.epam.training.ticketservice.model.config.ScreeningId;
 import com.epam.training.ticketservice.service.ScreeningService;
 import com.epam.training.ticketservice.service.exception.NoSuchItemException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -35,9 +33,10 @@ public class ScreeningCommandHandler {
     @ShellMethodAvailability(value = "checkAdminAvailability")
     public String createScreening(final String movieName, final String roomName, final String startingAt) {
         try {
-            this.screeningService.createScreening(
-                    new Screening(movieName, roomName,LocalDateTime.parse(startingAt,
-                            DateTimeFormatter.ofPattern(dateTimePattern))));
+            this.screeningService.createScreeningFromIds(
+                    movieName,
+                    roomName,
+                    LocalDateTime.parse(startingAt, DateTimeFormatter.ofPattern(dateTimePattern)));
             return String.format("Screening to '%s' in %s at %s successfully created.",
                     movieName, roomName, startingAt);
         } catch (Exception e) {
@@ -49,9 +48,10 @@ public class ScreeningCommandHandler {
     @ShellMethodAvailability(value = "checkAdminAvailability")
     public String deleteScreening(final String movieName, final String roomName, final String startingAt) {
         try {
-            this.screeningService.deleteScreening(
-                    new ScreeningId(movieName, roomName, LocalDateTime.parse(startingAt,
-                            DateTimeFormatter.ofPattern(dateTimePattern))));
+            this.screeningService.deleteScreening(this.screeningService.constructScreeningIdFromIds(
+                    movieName,
+                    roomName,
+                    LocalDateTime.parse(startingAt, DateTimeFormatter.ofPattern(dateTimePattern))));
             return String.format("Screening to '%s' in %s at %s successfully deleted.",
                     movieName, roomName, startingAt);
         } catch (NoSuchItemException e) {
@@ -63,7 +63,7 @@ public class ScreeningCommandHandler {
     public String listScreenings() {
         List<Screening> screenings = this.screeningService.getAllScreenings();
         if (screenings.isEmpty()) {
-            return "There are no screenings at the moment";
+            return "There are no screenings";
         } else {
             return screeningService.formattedScreeningList(screenings);
         }
