@@ -2,41 +2,32 @@ package com.epam.training.ticketservice.cli;
 
 import com.epam.training.ticketservice.service.AccountService;
 import com.epam.training.ticketservice.service.BookingService;
-import org.springframework.beans.factory.annotation.Value;
+import com.epam.training.ticketservice.service.exception.NoSuchItemException;
+import com.epam.training.ticketservice.service.exception.SeatsTakenException;
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 @ShellComponent
 public class BookingCommandHandler {
-
-    @Value("${ticket-service.date-time.pattern}")
-    private String dateTimePattern;
 
     private final BookingService bookingService;
     private final AccountService accountService;
 
-    public BookingCommandHandler(BookingService bookingService, AccountService accountService) {
+    public BookingCommandHandler(final BookingService bookingService,final  AccountService accountService) {
         this.bookingService = bookingService;
         this.accountService = accountService;
     }
 
     @ShellMethod(value = "Reserve tickets to seats on existing screening", key = {"book", "b"})
     @ShellMethodAvailability("checkLoggedInWithDefaultAccountAvailability")
-    public String book(String movieName, String roomName, String startingAt, String seats) {
+    public String book(final String movieName, final String roomName, final String startingAt, final String seats) {
         try {
-            this.bookingService.createBookingByIds(
-                    movieName,
-                    roomName,
-                    LocalDateTime.parse(startingAt, DateTimeFormatter.ofPattern(dateTimePattern)),
-                    seats,
+            this.bookingService.createBookingByIds(movieName, roomName, startingAt, seats,
                     accountService.getLoggedInAccount().get());
             return this.bookingService.formattedBookingMessage(movieName, roomName, startingAt, seats);
-        } catch (Exception e) {
+        } catch (NoSuchItemException | SeatsTakenException e) {
             return e.getMessage();
         }
     }

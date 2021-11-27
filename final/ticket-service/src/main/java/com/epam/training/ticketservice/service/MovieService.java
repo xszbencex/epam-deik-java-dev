@@ -13,11 +13,11 @@ public class MovieService {
 
     private final MovieRepository movieRepository;
 
-    public MovieService(MovieRepository movieRepository) {
+    public MovieService(final MovieRepository movieRepository) {
         this.movieRepository = movieRepository;
     }
 
-    public Optional<Movie> getMovieById(String name) {
+    public Optional<Movie> getMovieById(final String name) {
         return this.movieRepository.findById(name);
     }
 
@@ -25,17 +25,17 @@ public class MovieService {
         return this.movieRepository.findAll();
     }
 
-    public void createMovie(Movie movie) {
+    public void createMovie(final Movie movie) {
         this.movieRepository.save(movie);
     }
 
-    public void updateMovie(Movie movie) throws NoSuchItemException {
+    public void updateMovie(final Movie movie) throws NoSuchItemException {
         this.movieRepository.findById(movie.getName())
                 .map(currentMovie -> this.movieRepository.save(movie))
                 .orElseThrow(() -> new NoSuchItemException("There is no movie with name: " + movie.getName()));
     }
 
-    public void deleteMovie(String name) throws NoSuchItemException {
+    public void deleteMovie(final String name) throws NoSuchItemException {
         this.movieRepository.findById(name)
                 .map(movie -> {
                     this.movieRepository.deleteById(name);
@@ -44,10 +44,12 @@ public class MovieService {
                 .orElseThrow(() -> new NoSuchItemException("There is no movie with name: " + name));
     }
 
-    public String formattedMovieList(List<Movie> movies) {
+    public String formattedMovieList(final List<Movie> movies) {
         StringBuilder stringBuilder = new StringBuilder();
+
         movies.forEach(movie -> stringBuilder.append(movie.toString()).append("\n"));
         stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+
         return stringBuilder.toString();
     }
 }

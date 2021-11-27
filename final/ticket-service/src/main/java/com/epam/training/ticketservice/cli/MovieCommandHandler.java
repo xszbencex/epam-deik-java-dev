@@ -18,7 +18,7 @@ public class MovieCommandHandler {
     private final MovieService movieService;
     private final AccountService accountService;
 
-    public MovieCommandHandler(MovieService movieService, AccountService accountService) {
+    public MovieCommandHandler(final MovieService movieService, final AccountService accountService) {
         this.accountService = accountService;
         this.movieService = movieService;
     }
@@ -54,7 +54,8 @@ public class MovieCommandHandler {
 
     @ShellMethod(value = "List the movies", key = {"list movies", "lm"})
     public String listMovies() {
-        List<Movie> movies = this.movieService.getAllMovies();
+        final List<Movie> movies = this.movieService.getAllMovies();
+
         if (movies.isEmpty()) {
             return "There are no movies at the moment";
         } else {

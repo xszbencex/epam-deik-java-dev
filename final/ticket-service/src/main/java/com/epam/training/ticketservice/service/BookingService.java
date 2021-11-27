@@ -11,7 +11,6 @@ import com.epam.training.ticketservice.service.exception.NoSuchSeatException;
 import com.epam.training.ticketservice.service.exception.SeatsTakenException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -22,29 +21,29 @@ public class BookingService {
     private final RoomService roomService;
     private final PriceService priceService;
 
-    public BookingService(BookingRepository bookingRepository,
-                          ScreeningService screeningService,
-                          RoomService roomService,
-                          PriceService priceService) {
+    public BookingService(final BookingRepository bookingRepository,
+                          final ScreeningService screeningService,
+                          final RoomService roomService,
+                          final PriceService priceService) {
         this.bookingRepository = bookingRepository;
         this.screeningService = screeningService;
         this.roomService = roomService;
         this.priceService = priceService;
     }
 
-    public List<Booking> getBookingsByUsername(String username) {
+    public List<Booking> getBookingsByUsername(final String username) {
         return this.bookingRepository.findBookingsByAccount_Username(username);
     }
 
-    public void createBookingByIds(String movieName,
-                                   String roomName,
-                                   LocalDateTime startingAt,
-                                   String seats,
-                                   Account account) {
+    public void createBookingByIds(final String movieName,
+                                   final String roomName,
+                                   final String startingAt,
+                                   final String seats,
+                                   final Account account) throws NoSuchItemException, SeatsTakenException {
         final Screening screening = this.screeningService.getScreeningById(movieName, roomName, startingAt)
                 .orElseThrow(() -> new NoSuchItemException("There is no screening with the given ids"));
-
         final List<Seat> seatList = seatsStringParser(seats);
+
         this.bookingRepository.findBookingsByScreening(screening).forEach(booking ->
                 seatList.forEach(currentSeat ->
                         booking.getSeats().forEach(bookingSeat -> {
@@ -64,25 +63,30 @@ public class BookingService {
                 })
         );
 
-        this.createBooking(new Booking(screening,seatList, account,
-                this.priceService.calculatePriceForBooking(screening, seatList.size())));
+        final Long price = this.priceService.calculatePriceForBooking(screening, seatList.size());
+        this.createBooking(new Booking(screening, seatList, account, price));
     }
 
-    public void createBooking(Booking booking) {
+    public void createBooking(final Booking booking) {
         this.bookingRepository.save(booking);
     }
 
-    public String formattedBookingMessage(String movieName, String roomName, String startingAt, String seats) {
+    public String formattedBookingMessage(final String movieName,
+                                          final String roomName,
+                                          final String startingAt,
+                                          final String seats) {
         final List<Seat> seatList = seatsStringParser(seats);
+
         StringBuilder stringBuilder = new StringBuilder();
         seatList.forEach(seat -> stringBuilder.append("(").append(seat).append("), "));
         stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
+
         return String.format("Seats booked: %s; the price for this booking is %s HUF", stringBuilder,
                 this.priceService.calculatePriceForBooking(movieName, roomName, startingAt, seatList.size()));
     }
 
-    private List<Seat> seatsStringParser(String seats) {
-        SeatListConverter seatListConverter = new SeatListConverter();
+    private List<Seat> seatsStringParser(final String seats) {
+        final SeatListConverter seatListConverter = new SeatListConverter();
         return seatListConverter.convertToEntityAttribute(seats);
     }
 }

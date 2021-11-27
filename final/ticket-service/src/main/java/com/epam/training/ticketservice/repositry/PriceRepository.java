@@ -1,4 +1,4 @@
-package com.epam.training.ticketservice.repositry.init;
+package com.epam.training.ticketservice.repositry;
 
 import com.epam.training.ticketservice.model.PriceComponent;
 import com.epam.training.ticketservice.model.Screening;

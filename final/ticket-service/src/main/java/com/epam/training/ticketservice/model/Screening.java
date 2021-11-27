@@ -1,7 +1,6 @@
 package com.epam.training.ticketservice.model;
 
 import com.epam.training.ticketservice.model.config.ScreeningId;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,12 +11,15 @@ import java.time.format.DateTimeFormatter;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 public class Screening implements Serializable {
 
     @EmbeddedId
     private ScreeningId id;
+
+    public Screening(ScreeningId screeningId) {
+        this.id = screeningId;
+    }
 
     @Override
     public String toString() {

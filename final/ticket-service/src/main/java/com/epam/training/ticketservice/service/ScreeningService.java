@@ -19,52 +19,67 @@ import java.util.Optional;
 @Service
 public class ScreeningService {
 
-    @Value("${ticket-service.screening.break-length}")
-    private int breakLength;
-
-    @Value("${ticket-service.date-time.pattern}")
-    private String dateTimePattern;
+    private final int breakLength;
+    private final String dateTimePattern;
 
     private final ScreeningRepository screeningRepository;
     private final MovieService movieService;
     private final RoomService roomService;
 
-    public ScreeningService(ScreeningRepository screeningRepository,
-                            MovieService movieService,
-                            RoomService roomService) {
+    public ScreeningService(final ScreeningRepository screeningRepository,
+                            final MovieService movieService,
+                            final RoomService roomService,
+                            final @Value("${ticket-service.screening.break-length}") int breakLength,
+                            final @Value("${ticket-service.date-time.pattern}") String dateTimePattern) {
         this.screeningRepository = screeningRepository;
         this.movieService = movieService;
         this.roomService = roomService;
+        this.breakLength = breakLength;
+        this.dateTimePattern = dateTimePattern;
     }
 
-    public Optional<Screening> getScreeningById(String movieName, String roomName, LocalDateTime startingAt) {
+    public Optional<Screening> getScreeningById(final String movieName,
+                                                final String roomName,
+                                                final LocalDateTime startingAt) {
         return this.screeningRepository.findById(constructScreeningIdFromIds(movieName, roomName, startingAt));
+    }
+
+    public Optional<Screening> getScreeningById(final String movieName,
+                                                final String roomName,
+                                                final String startingAt) {
+        final LocalDateTime parsedStartingAt = this.parseDateString(startingAt);
+
+        return getScreeningById(movieName, roomName, parsedStartingAt);
     }
 
     public List<Screening> getAllScreenings() {
         return this.screeningRepository.findAll();
     }
 
-    public void createScreeningFromIds(String movieName, String roomName, LocalDateTime startingAt)
+    public void createScreeningFromIds(final String movieName, final String roomName, final String startingAt)
             throws NoSuchItemException, ScreeningOverlapException {
+        final LocalDateTime formattedStartingAt = this.parseDateString(startingAt);
         final Movie movie = this.movieService.getMovieById(movieName).orElseThrow(() ->
                 new NoSuchItemException("There is no movie with name: " + movieName));
-        final Room room = this.roomService.getRoomById(roomName).orElseThrow(() ->
+
+        this.roomService.getRoomById(roomName).orElseThrow(() ->
             new NoSuchItemException("There is no room with name: " + roomName));
-        if (isOverlappingScreening(roomName, movie.getLength(), startingAt)) {
+
+        if (isOverlappingScreening(roomName, movie.getLength(), formattedStartingAt)) {
             throw new ScreeningOverlapException("There is an overlapping screening");
-        } else if (isOverlappingBreak(roomName, startingAt)) {
+        } else if (isOverlappingBreak(roomName, formattedStartingAt)) {
             throw new ScreeningOverlapException(
                     "This would start in the break period after another screening in this room");
         }
-        this.createScreening(new Screening(constructScreeningIdFromIds(movieName, roomName, startingAt)));
+
+        this.createScreening(new Screening(constructScreeningIdFromIds(movieName, roomName, formattedStartingAt)));
     }
 
-    public void createScreening(Screening screening) {
+    public void createScreening(final Screening screening) {
         this.screeningRepository.save(screening);
     }
 
-    public void deleteScreening(ScreeningId screeningId) throws NoSuchItemException {
+    public void deleteScreening(final ScreeningId screeningId) throws NoSuchItemException {
         this.screeningRepository.findById(screeningId)
                 .map(screening -> {
                     this.screeningRepository.delete(screening);
@@ -79,25 +94,49 @@ public class ScreeningService {
 
     public String formattedScreeningList(List<Screening> screenings) {
         StringBuilder stringBuilder = new StringBuilder();
+
         Collections.reverse(screenings); // A tesztek miatt kell, mert ott a listázás valamiért fordítva működik
         screenings.forEach(screening -> stringBuilder.append(screening).append("\n"));
         stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+
         return stringBuilder.toString();
     }
 
-    public ScreeningId constructScreeningIdFromIds(String movieName, String roomName, LocalDateTime startingAt) {
+    public ScreeningId constructScreeningIdFromIds(final String movieName,
+                                                   final String roomName,
+                                                   final LocalDateTime startingAt) {
         final Movie movie = movieService.getMovieById(movieName).orElse(null);
         final Room room = roomService.getRoomById(roomName).orElse(null);
+
         return new ScreeningId(movie, room, startingAt);
     }
 
-    private boolean isOverlappingScreening(String roomName, Integer movieLength, LocalDateTime startingAt) {
+    public ScreeningId constructScreeningIdFromIds(final String movieName,
+                                                   final String roomName,
+                                                   final String startingAt) {
+        final Movie movie = movieService.getMovieById(movieName).orElse(null);
+        final Room room = roomService.getRoomById(roomName).orElse(null);
+        final LocalDateTime formattedStartingAt = this.parseDateString(startingAt);
+
+        return new ScreeningId(movie, room, formattedStartingAt);
+    }
+
+    private LocalDateTime parseDateString(final String dateString) {
+        return LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern(dateTimePattern));
+    }
+
+    private boolean isOverlappingScreening(final String roomName,
+                                           final Integer movieLength,
+                                           final LocalDateTime startingAt) {
         final List<Screening> screenings = screeningRepository.findScreeningsById_Room_Name(roomName);
         final LocalDateTime endingAt = startingAt.plusMinutes(movieLength);
+
         return screenings.stream().anyMatch(screening -> {
-            LocalDateTime currentScreeningEndingAt = screening.getId().getStartingAt().plusMinutes(
-                    this.movieService.getMovieById(screening.getId().getMovie().getName()).get().getLength()
-            );
+            final int currentMovieLength = this.movieService.getMovieById(
+                    screening.getId().getMovie().getName()).get().getLength();
+            final LocalDateTime currentScreeningEndingAt =
+                    screening.getId().getStartingAt().plusMinutes(currentMovieLength);
+
             return (startingAt.isAfter(screening.getId().getStartingAt())
                     && startingAt.isBefore(currentScreeningEndingAt))
                     ||
@@ -106,12 +145,15 @@ public class ScreeningService {
         });
     }
 
-    private boolean isOverlappingBreak(String roomName, LocalDateTime startingAt) {
+    private boolean isOverlappingBreak(final String roomName, final LocalDateTime startingAt) {
         final List<Screening> screenings = screeningRepository.findScreeningsById_Room_Name(roomName);
+
         return screenings.stream().anyMatch(screening -> {
-            LocalDateTime currentScreeningEndingAt = screening.getId().getStartingAt().plusMinutes(
-                    this.movieService.getMovieById(screening.getId().getMovie().getName()).get().getLength()
-            );
+            final int currentMovieLength = this.movieService.getMovieById(
+                    screening.getId().getMovie().getName()).get().getLength();
+            final LocalDateTime currentScreeningEndingAt =
+                    screening.getId().getStartingAt().plusMinutes(currentMovieLength);
+
             return startingAt.isAfter(currentScreeningEndingAt)
                     && startingAt.isBefore(currentScreeningEndingAt.plusMinutes(breakLength));
         });

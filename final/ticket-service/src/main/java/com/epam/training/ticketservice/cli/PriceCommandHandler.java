@@ -10,22 +10,20 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
 
-import java.time.LocalDateTime;
-
 @ShellComponent
 public class PriceCommandHandler {
 
     private final PriceService priceService;
     private final AccountService accountService;
 
-    public PriceCommandHandler(PriceService priceService, AccountService accountService) {
+    public PriceCommandHandler(final PriceService priceService, final AccountService accountService) {
         this.priceService = priceService;
         this.accountService = accountService;
     }
 
     @ShellMethod(value = "Update the value of base price", key = {"update base price", "ubp"})
     @ShellMethodAvailability(value = "checkAdminAvailability")
-    public void updateBasePrice(Integer basePrice) {
+    public void updateBasePrice(final Integer basePrice) {
         priceService.setBasePrice(basePrice);
     }
 
@@ -36,14 +34,14 @@ public class PriceCommandHandler {
 
     @ShellMethod(value = "Create price component", key = {"create price component", "cpc"})
     @ShellMethodAvailability(value = "checkAdminAvailability")
-    public String createPriceComponent(String name, Integer amount) {
+    public String createPriceComponent(final String name, final Integer amount) {
         this.priceService.createPriceComponent(new PriceComponent(name, amount));
         return String.format("Price component with name '%s' successfully created.", name);
     }
 
     @ShellMethod(value = "Attach price component to a room", key = {"attach price component to room", "apctr"})
     @ShellMethodAvailability(value = "checkAdminAvailability")
-    public String attachPriceComponentToRoom(String priceComponentName, String roomName) {
+    public String attachPriceComponentToRoom(final String priceComponentName, final String roomName) {
         try {
             this.priceService.attachPriceComponentToRoom(priceComponentName, roomName);
             return String.format("Price component with name '%s' successfully attached to room '%s'.",
@@ -55,7 +53,7 @@ public class PriceCommandHandler {
 
     @ShellMethod(value = "Attach price component to a movie", key = {"attach price component to movie", "apctm"})
     @ShellMethodAvailability(value = "checkAdminAvailability")
-    public String attachPriceComponentToMovie(String priceComponentName, String movieName) {
+    public String attachPriceComponentToMovie(final String priceComponentName, final String movieName) {
         try {
             this.priceService.attachPriceComponentToMovie(priceComponentName, movieName);
             return String.format("Price component with name '%s' successfully attached to movie '%s'.",

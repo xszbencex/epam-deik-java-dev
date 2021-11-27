@@ -53,8 +53,10 @@ public class Booking {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
+
         seats.forEach(seat -> stringBuilder.append("(").append(seat).append(")").append(", "));
         stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
+
         return String.format("Seats %s on %s in room %s starting at %s for %s HUF",
                 stringBuilder,
                 getScreening().getId().getMovie().getName(),

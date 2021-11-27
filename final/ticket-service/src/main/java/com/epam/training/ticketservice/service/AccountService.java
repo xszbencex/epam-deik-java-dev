@@ -17,7 +17,8 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final BookingService bookingService;
 
-    public AccountService(AccountRepository accountRepository, BookingService bookingService) {
+    public AccountService(final AccountRepository accountRepository,
+                          final BookingService bookingService) {
         this.accountRepository = accountRepository;
         this.bookingService = bookingService;
     }
@@ -26,28 +27,29 @@ public class AccountService {
         return loggedInAccount;
     }
 
-    public void setLoggedInAccount(Optional<Account> account) {
+    public void setLoggedInAccount(final Optional<Account> account) {
         this.loggedInAccount = account;
     }
 
-    public void createAccount(Account account) throws UsernameTakenException {
+    public void createAccount(final Account account) throws UsernameTakenException {
         if (this.accountRepository.findById(account.getUsername()).isPresent()) {
             throw new UsernameTakenException();
-        } else {
-            this.accountRepository.save(account);
         }
+
+        this.accountRepository.save(account);
     }
 
     public Optional<Account> getAccountById(final String username) {
         return this.accountRepository.findById(username);
     }
 
-    public String formattedAccountDescription(Account account) {
+    public String formattedAccountDescription(final Account account) {
         StringBuilder stringBuilder = new StringBuilder();
+
         stringBuilder.append(String.format("Signed in with%s account '%s'\n",
                 account.getAdmin() ? " privileged" : "",
                 account.getUsername()));
-        List<Booking> accountBookings = this.bookingService.getBookingsByUsername(account.getUsername());
+        final List<Booking> accountBookings = this.bookingService.getBookingsByUsername(account.getUsername());
         if (accountBookings.isEmpty()) {
             stringBuilder.append("You have not booked any tickets yet");
         } else {
@@ -55,6 +57,7 @@ public class AccountService {
             accountBookings.forEach(booking -> stringBuilder.append(booking).append("\n"));
             stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         }
+
         return stringBuilder.toString();
     }
 }

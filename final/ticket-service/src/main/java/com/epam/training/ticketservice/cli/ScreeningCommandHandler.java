@@ -5,26 +5,21 @@ import com.epam.training.ticketservice.model.Screening;
 import com.epam.training.ticketservice.service.AccountService;
 import com.epam.training.ticketservice.service.ScreeningService;
 import com.epam.training.ticketservice.service.exception.NoSuchItemException;
-import org.springframework.beans.factory.annotation.Value;
+import com.epam.training.ticketservice.service.exception.ScreeningOverlapException;
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @ShellComponent
 public class ScreeningCommandHandler {
 
-    @Value("${ticket-service.date-time.pattern}")
-    private String dateTimePattern;
-
     private final ScreeningService screeningService;
     private final AccountService accountService;
 
-    public ScreeningCommandHandler(ScreeningService screeningService, AccountService accountService) {
+    public ScreeningCommandHandler(final ScreeningService screeningService, final AccountService accountService) {
         this.screeningService = screeningService;
         this.accountService = accountService;
     }
@@ -33,13 +28,10 @@ public class ScreeningCommandHandler {
     @ShellMethodAvailability(value = "checkAdminAvailability")
     public String createScreening(final String movieName, final String roomName, final String startingAt) {
         try {
-            this.screeningService.createScreeningFromIds(
-                    movieName,
-                    roomName,
-                    LocalDateTime.parse(startingAt, DateTimeFormatter.ofPattern(dateTimePattern)));
+            this.screeningService.createScreeningFromIds(movieName, roomName, startingAt);
             return String.format("Screening to '%s' in %s at %s successfully created.",
                     movieName, roomName, startingAt);
-        } catch (Exception e) {
+        } catch (NoSuchItemException | ScreeningOverlapException e) {
             return e.getMessage();
         }
     }
@@ -51,7 +43,7 @@ public class ScreeningCommandHandler {
             this.screeningService.deleteScreening(this.screeningService.constructScreeningIdFromIds(
                     movieName,
                     roomName,
-                    LocalDateTime.parse(startingAt, DateTimeFormatter.ofPattern(dateTimePattern))));
+                    startingAt));
             return String.format("Screening to '%s' in %s at %s successfully deleted.",
                     movieName, roomName, startingAt);
         } catch (NoSuchItemException e) {
@@ -61,7 +53,8 @@ public class ScreeningCommandHandler {
 
     @ShellMethod(value = "List the screenings", key = {"list screenings", "ls"})
     public String listScreenings() {
-        List<Screening> screenings = this.screeningService.getAllScreenings();
+        final List<Screening> screenings = this.screeningService.getAllScreenings();
+
         if (screenings.isEmpty()) {
             return "There are no screenings";
         } else {

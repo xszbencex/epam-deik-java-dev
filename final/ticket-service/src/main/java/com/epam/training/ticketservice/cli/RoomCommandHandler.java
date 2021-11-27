@@ -18,7 +18,7 @@ public class RoomCommandHandler {
     private final RoomService roomService;
     private final AccountService accountService;
 
-    public RoomCommandHandler(RoomService roomService, AccountService accountService) {
+    public RoomCommandHandler(final RoomService roomService, final AccountService accountService) {
         this.roomService = roomService;
         this.accountService = accountService;
     }
@@ -54,7 +54,8 @@ public class RoomCommandHandler {
 
     @ShellMethod(value = "List the rooms", key = {"list rooms", "lr"})
     public String listRooms() {
-        List<Room> rooms = this.roomService.getAllRooms();
+        final List<Room> rooms = this.roomService.getAllRooms();
+
         if (rooms.isEmpty()) {
             return "There are no rooms at the moment";
         } else {
