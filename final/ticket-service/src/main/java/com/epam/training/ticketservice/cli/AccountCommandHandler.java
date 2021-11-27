@@ -71,9 +71,7 @@ public class AccountCommandHandler {
     @ShellMethod(value = "Query signed in account info", key = {"describe account", "da"})
     public String describeAccount() {
         if (this.loggedInAccount.isPresent()) {
-            return String.format("Signed in with%s account '%s'",
-                    this.loggedInAccount.filter(Account::getAdmin).isPresent() ? " privileged" : "",
-                    loggedInAccount.orElseThrow().getUsername());
+            return this.accountService.formattedAccountDescription(loggedInAccount.get());
         } else {
             return "You are not signed in";
         }
