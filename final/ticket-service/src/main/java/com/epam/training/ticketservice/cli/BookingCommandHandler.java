@@ -35,7 +35,7 @@ public class BookingCommandHandler {
                     LocalDateTime.parse(startingAt, DateTimeFormatter.ofPattern(dateTimePattern)),
                     seats,
                     accountService.getLoggedInAccount().get());
-            return this.bookingService.formattedBookingMessage(seats);
+            return this.bookingService.formattedBookingMessage(movieName, roomName, startingAt, seats);
         } catch (Exception e) {
             return e.getMessage();
         }

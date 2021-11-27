@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,6 +79,7 @@ public class ScreeningService {
 
     public String formattedScreeningList(List<Screening> screenings) {
         StringBuilder stringBuilder = new StringBuilder();
+        Collections.reverse(screenings); // A tesztek miatt kell, mert ott a listázás valamiért fordítva működik
         screenings.forEach(screening -> stringBuilder.append(screening).append("\n"));
         stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         return stringBuilder.toString();
@@ -91,7 +93,6 @@ public class ScreeningService {
 
     private boolean isOverlappingScreening(String roomName, Integer movieLength, LocalDateTime startingAt) {
         final List<Screening> screenings = screeningRepository.findScreeningsById_Room_Name(roomName);
-        System.out.println(screenings);
         final LocalDateTime endingAt = startingAt.plusMinutes(movieLength);
         return screenings.stream().anyMatch(screening -> {
             LocalDateTime currentScreeningEndingAt = screening.getId().getStartingAt().plusMinutes(

@@ -20,13 +20,16 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final ScreeningService screeningService;
     private final RoomService roomService;
+    private final PriceService priceService;
 
     public BookingService(BookingRepository bookingRepository,
                           ScreeningService screeningService,
-                          RoomService roomService) {
+                          RoomService roomService,
+                          PriceService priceService) {
         this.bookingRepository = bookingRepository;
         this.screeningService = screeningService;
         this.roomService = roomService;
+        this.priceService = priceService;
     }
 
     public List<Booking> getBookingsByUsername(String username) {
@@ -61,20 +64,21 @@ public class BookingService {
                 })
         );
 
-        this.createBooking(new Booking(screening, seatList, account, 1500L * seatList.size()));
+        this.createBooking(new Booking(screening,seatList, account,
+                this.priceService.calculatePriceForBooking(screening, seatList.size())));
     }
 
     public void createBooking(Booking booking) {
         this.bookingRepository.save(booking);
     }
 
-    public String formattedBookingMessage(String seats) {
+    public String formattedBookingMessage(String movieName, String roomName, String startingAt, String seats) {
         final List<Seat> seatList = seatsStringParser(seats);
         StringBuilder stringBuilder = new StringBuilder();
         seatList.forEach(seat -> stringBuilder.append("(").append(seat).append("), "));
         stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
-        return String.format("Seats booked: %s; the price for this booking is %s HUF",
-                stringBuilder, seatList.size() * 1500L);
+        return String.format("Seats booked: %s; the price for this booking is %s HUF", stringBuilder,
+                this.priceService.calculatePriceForBooking(movieName, roomName, startingAt, seatList.size()));
     }
 
     private List<Seat> seatsStringParser(String seats) {
