@@ -1,6 +1,6 @@
 package com.epam.training.ticketservice.cli;
 
-import com.epam.training.ticketservice.model.Account;
+import com.epam.training.ticketservice.service.AccountService;
 import com.epam.training.ticketservice.service.BookingService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.shell.Availability;
@@ -17,12 +17,12 @@ public class BookingCommandHandler {
     @Value("${ticket-service.date-time.pattern}")
     private String dateTimePattern;
 
-    private final AccountCommandHandler accountCommandHandler;
     private final BookingService bookingService;
+    private final AccountService accountService;
 
-    public BookingCommandHandler(AccountCommandHandler accountCommandHandler, BookingService bookingService) {
-        this.accountCommandHandler = accountCommandHandler;
+    public BookingCommandHandler(BookingService bookingService, AccountService accountService) {
         this.bookingService = bookingService;
+        this.accountService = accountService;
     }
 
     @ShellMethod(value = "Reserve tickets to seats on existing screening", key = {"book", "b"})
@@ -34,7 +34,7 @@ public class BookingCommandHandler {
                     roomName,
                     LocalDateTime.parse(startingAt, DateTimeFormatter.ofPattern(dateTimePattern)),
                     seats,
-                    accountCommandHandler.getLoggedInAccount().get());
+                    accountService.getLoggedInAccount().get());
             return this.bookingService.formattedBookingMessage(seats);
         } catch (Exception e) {
             return e.getMessage();
@@ -42,7 +42,7 @@ public class BookingCommandHandler {
     }
 
     public Availability checkLoggedInWithDefaultAccountAvailability() {
-        return this.accountCommandHandler.getLoggedInAccount().filter(account -> !account.getAdmin()).isPresent()
+        return this.accountService.getLoggedInAccount().filter(account -> !account.getAdmin()).isPresent()
                 ? Availability.available()
                 : Availability.unavailable(
                         "this command is only available for logged in users without admin privileges.");

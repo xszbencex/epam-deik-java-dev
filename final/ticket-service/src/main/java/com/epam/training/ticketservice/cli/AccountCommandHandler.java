@@ -14,14 +14,9 @@ import java.util.Optional;
 public class AccountCommandHandler {
 
     private final AccountService accountService;
-    private Optional<Account> loggedInAccount = Optional.empty();
 
     public AccountCommandHandler(AccountService accountService) {
         this.accountService = accountService;
-    }
-
-    public Optional<Account> getLoggedInAccount() {
-        return loggedInAccount;
     }
 
     @ShellMethod(value = "Sign up an account", key = {"sign up", "su"})
@@ -38,7 +33,7 @@ public class AccountCommandHandler {
     public String signIn(final String username, final String password) {
         final Optional<Account> account = this.accountService.getAccountById(username);
         if (account.filter(acc -> !acc.getAdmin()).isPresent() && password.equals(account.get().getPassword())) {
-            this.loggedInAccount = Optional.of(new Account(username, password));
+            this.accountService.setLoggedInAccount(account);
             return "Successfully signed in";
         } else if (account.filter(Account::getAdmin).isPresent()) {
             return String.format("'%s' is a privileged user. "
@@ -52,7 +47,7 @@ public class AccountCommandHandler {
     public String signInPrivileged(final String username, final String password) {
         final Optional<Account> account = this.accountService.getAccountById(username);
         if (account.filter(Account::getAdmin).isPresent() && password.equals(account.get().getPassword())) {
-            this.loggedInAccount = Optional.of(new Account(username, password, true));
+            this.accountService.setLoggedInAccount(account);
             return "Successfully signed in!";
         } else if (account.filter(acc -> !acc.getAdmin()).isPresent()) {
             return String.format("'%s' is not a privileged user", username);
@@ -64,21 +59,21 @@ public class AccountCommandHandler {
     @ShellMethod(value = "Sign out from account", key = {"sign out", "so"})
     @ShellMethodAvailability(value = "checkLoggedInAvailability")
     public String signOut() {
-        this.loggedInAccount = Optional.empty();
+        this.accountService.setLoggedInAccount(Optional.empty());
         return "Successfully signed out!";
     }
 
     @ShellMethod(value = "Query signed in account info", key = {"describe account", "da"})
     public String describeAccount() {
-        if (this.loggedInAccount.isPresent()) {
-            return this.accountService.formattedAccountDescription(loggedInAccount.get());
+        if (this.accountService.getLoggedInAccount().isPresent()) {
+            return this.accountService.formattedAccountDescription(this.accountService.getLoggedInAccount().get());
         } else {
             return "You are not signed in";
         }
     }
 
     public Availability checkLoggedInAvailability() {
-        return this.loggedInAccount.isPresent()
+        return this.accountService.getLoggedInAccount().isPresent()
                 ? Availability.available()
                 : Availability.unavailable("you are not signed in.");
     }

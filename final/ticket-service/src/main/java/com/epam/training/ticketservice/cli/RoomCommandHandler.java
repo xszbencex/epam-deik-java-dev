@@ -2,6 +2,7 @@ package com.epam.training.ticketservice.cli;
 
 import com.epam.training.ticketservice.model.Account;
 import com.epam.training.ticketservice.model.Room;
+import com.epam.training.ticketservice.service.AccountService;
 import com.epam.training.ticketservice.service.RoomService;
 import com.epam.training.ticketservice.service.exception.NoSuchItemException;
 import org.springframework.shell.Availability;
@@ -14,12 +15,12 @@ import java.util.List;
 @ShellComponent
 public class RoomCommandHandler {
 
-    private final AccountCommandHandler accountCommandHandler;
     private final RoomService roomService;
+    private final AccountService accountService;
 
-    public RoomCommandHandler(AccountCommandHandler accountCommandHandler, RoomService roomService) {
-        this.accountCommandHandler = accountCommandHandler;
+    public RoomCommandHandler(RoomService roomService, AccountService accountService) {
         this.roomService = roomService;
+        this.accountService = accountService;
     }
 
     @ShellMethod(value = "Add a room to database", key = {"create room", "cr"})
@@ -62,7 +63,7 @@ public class RoomCommandHandler {
     }
 
     public Availability checkAdminAvailability() {
-        return this.accountCommandHandler.getLoggedInAccount().filter(Account::getAdmin).isPresent()
+        return this.accountService.getLoggedInAccount().filter(Account::getAdmin).isPresent()
                 ? Availability.available()
                 : Availability.unavailable("this command requires admin privileges.");
     }

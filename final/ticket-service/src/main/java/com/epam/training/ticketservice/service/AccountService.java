@@ -12,12 +12,22 @@ import java.util.Optional;
 @Service
 public class AccountService {
 
+    private Optional<Account> loggedInAccount = Optional.empty();
+
     private final AccountRepository accountRepository;
     private final BookingService bookingService;
 
     public AccountService(AccountRepository accountRepository, BookingService bookingService) {
         this.accountRepository = accountRepository;
         this.bookingService = bookingService;
+    }
+
+    public Optional<Account> getLoggedInAccount() {
+        return loggedInAccount;
+    }
+
+    public void setLoggedInAccount(Optional<Account> account) {
+        this.loggedInAccount = account;
     }
 
     public void createAccount(Account account) throws UsernameTakenException {

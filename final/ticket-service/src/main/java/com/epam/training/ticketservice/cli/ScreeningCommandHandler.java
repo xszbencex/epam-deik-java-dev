@@ -2,6 +2,7 @@ package com.epam.training.ticketservice.cli;
 
 import com.epam.training.ticketservice.model.Account;
 import com.epam.training.ticketservice.model.Screening;
+import com.epam.training.ticketservice.service.AccountService;
 import com.epam.training.ticketservice.service.ScreeningService;
 import com.epam.training.ticketservice.service.exception.NoSuchItemException;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,13 +21,12 @@ public class ScreeningCommandHandler {
     @Value("${ticket-service.date-time.pattern}")
     private String dateTimePattern;
 
-    private final AccountCommandHandler accountCommandHandler;
     private final ScreeningService screeningService;
+    private final AccountService accountService;
 
-    public ScreeningCommandHandler(AccountCommandHandler accountCommandHandler,
-                                   ScreeningService screeningService) {
-        this.accountCommandHandler = accountCommandHandler;
+    public ScreeningCommandHandler(ScreeningService screeningService, AccountService accountService) {
         this.screeningService = screeningService;
+        this.accountService = accountService;
     }
 
     @ShellMethod(value = "Add a screening to database", key = {"create screening", "cs"})
@@ -70,7 +70,7 @@ public class ScreeningCommandHandler {
     }
 
     public Availability checkAdminAvailability() {
-        return this.accountCommandHandler.getLoggedInAccount().filter(Account::getAdmin).isPresent()
+        return this.accountService.getLoggedInAccount().filter(Account::getAdmin).isPresent()
                 ? Availability.available()
                 : Availability.unavailable("this command requires admin privileges.");
     }

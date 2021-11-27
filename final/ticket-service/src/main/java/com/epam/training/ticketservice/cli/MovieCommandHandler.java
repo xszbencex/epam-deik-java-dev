@@ -2,6 +2,7 @@ package com.epam.training.ticketservice.cli;
 
 import com.epam.training.ticketservice.model.Account;
 import com.epam.training.ticketservice.model.Movie;
+import com.epam.training.ticketservice.service.AccountService;
 import com.epam.training.ticketservice.service.MovieService;
 import com.epam.training.ticketservice.service.exception.NoSuchItemException;
 import org.springframework.shell.Availability;
@@ -14,11 +15,11 @@ import java.util.List;
 @ShellComponent
 public class MovieCommandHandler {
 
-    private final AccountCommandHandler accountCommandHandler;
     private final MovieService movieService;
+    private final AccountService accountService;
 
-    public MovieCommandHandler(AccountCommandHandler accountCommandHandler, MovieService movieService) {
-        this.accountCommandHandler = accountCommandHandler;
+    public MovieCommandHandler(MovieService movieService, AccountService accountService) {
+        this.accountService = accountService;
         this.movieService = movieService;
     }
 
@@ -62,7 +63,7 @@ public class MovieCommandHandler {
     }
 
     public Availability checkAdminAvailability() {
-        return this.accountCommandHandler.getLoggedInAccount().filter(Account::getAdmin).isPresent()
+        return this.accountService.getLoggedInAccount().filter(Account::getAdmin).isPresent()
                 ? Availability.available()
                 : Availability.unavailable("this command requires admin privileges.");
     }
