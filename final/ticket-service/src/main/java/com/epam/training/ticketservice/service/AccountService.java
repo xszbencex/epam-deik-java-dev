@@ -49,6 +49,10 @@ public class AccountService {
         stringBuilder.append(String.format("Signed in with%s account '%s'\n",
                 account.getAdmin() ? " privileged" : "",
                 account.getUsername()));
+        if (account.getAdmin()) {
+            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+            return stringBuilder.toString();
+        }
         final List<Booking> accountBookings = this.bookingService.getBookingsByUsername(account.getUsername());
         if (accountBookings.isEmpty()) {
             stringBuilder.append("You have not booked any tickets yet");
