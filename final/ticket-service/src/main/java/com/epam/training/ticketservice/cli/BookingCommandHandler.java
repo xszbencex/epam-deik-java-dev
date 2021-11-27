@@ -44,6 +44,7 @@ public class BookingCommandHandler {
     public Availability checkLoggedInWithDefaultAccountAvailability() {
         return this.accountCommandHandler.getLoggedInAccount().filter(account -> !account.getAdmin()).isPresent()
                 ? Availability.available()
-                : Availability.unavailable("this command is only available for logged in users without admin privileges.");
+                : Availability.unavailable(
+                        "this command is only available for logged in users without admin privileges.");
     }
 }

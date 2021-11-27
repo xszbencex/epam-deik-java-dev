@@ -27,9 +27,9 @@ public class Booking {
 
     @ManyToOne
     @JoinColumns({
-            @JoinColumn(name="moive_fk", referencedColumnName="movie_fk", nullable = false),
-            @JoinColumn(name="room_fk", referencedColumnName="room_fk", nullable = false),
-            @JoinColumn(name="starting_at", referencedColumnName="starting_at", nullable = false)
+            @JoinColumn(name = "moive_fk", referencedColumnName = "movie_fk", nullable = false),
+            @JoinColumn(name = "room_fk", referencedColumnName = "room_fk", nullable = false),
+            @JoinColumn(name = "starting_at", referencedColumnName = "starting_at", nullable = false)
     })
     private Screening screening;
 

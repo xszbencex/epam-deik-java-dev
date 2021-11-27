@@ -97,8 +97,11 @@ public class ScreeningService {
             LocalDateTime currentScreeningEndingAt = screening.getId().getStartingAt().plusMinutes(
                     this.movieService.getMovieById(screening.getId().getMovie().getName()).get().getLength()
             );
-            return (startingAt.isAfter(screening.getId().getStartingAt()) && startingAt.isBefore(currentScreeningEndingAt))
-                    || (endingAt.isAfter(screening.getId().getStartingAt()) && endingAt.isBefore(currentScreeningEndingAt));
+            return (startingAt.isAfter(screening.getId().getStartingAt())
+                    && startingAt.isBefore(currentScreeningEndingAt))
+                    ||
+                    (endingAt.isAfter(screening.getId().getStartingAt())
+                    && endingAt.isBefore(currentScreeningEndingAt));
         });
     }
 
