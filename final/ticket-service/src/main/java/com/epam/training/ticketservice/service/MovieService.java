@@ -31,7 +31,10 @@ public class MovieService {
 
     public void updateMovie(final Movie movie) throws NoSuchItemException {
         this.movieRepository.findById(movie.getName())
-                .map(currentMovie -> this.movieRepository.save(movie))
+                .map(currentMovie -> {
+                    this.movieRepository.save(movie);
+                    return currentMovie;
+                })
                 .orElseThrow(() -> new NoSuchItemException("There is no movie with name: " + movie.getName()));
     }
 

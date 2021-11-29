@@ -33,7 +33,7 @@ public class AccountCommandHandler {
     public String signIn(final String username, final String password) {
         final Optional<Account> account = this.accountService.getAccountById(username);
         if (account.filter(acc -> !acc.getAdmin()).isPresent() && password.equals(account.get().getPassword())) {
-            this.accountService.setLoggedInAccount(account);
+            this.accountService.signIn(account.get());
             return "Successfully signed in";
         } else if (account.filter(Account::getAdmin).isPresent()) {
             return String.format("'%s' is a privileged user. "
@@ -47,8 +47,8 @@ public class AccountCommandHandler {
     public String signInPrivileged(final String username, final String password) {
         final Optional<Account> account = this.accountService.getAccountById(username);
         if (account.filter(Account::getAdmin).isPresent() && password.equals(account.get().getPassword())) {
-            this.accountService.setLoggedInAccount(account);
-            return "Successfully signed in!";
+            this.accountService.signIn(account.get());
+            return "Successfully signed in";
         } else if (account.filter(acc -> !acc.getAdmin()).isPresent()) {
             return String.format("'%s' is not a privileged user", username);
         } else {
@@ -59,14 +59,15 @@ public class AccountCommandHandler {
     @ShellMethod(value = "Sign out from account", key = {"sign out", "so"})
     @ShellMethodAvailability(value = "checkLoggedInAvailability")
     public String signOut() {
-        this.accountService.setLoggedInAccount(Optional.empty());
-        return "Successfully signed out!";
+        this.accountService.signOut();
+        return "Successfully signed out";
     }
 
     @ShellMethod(value = "Query signed in account info", key = {"describe account", "da"})
     public String describeAccount() {
-        if (this.accountService.getLoggedInAccount().isPresent()) {
-            return this.accountService.formattedAccountDescription(this.accountService.getLoggedInAccount().get());
+        final Optional<Account> loggedInAccount = this.accountService.getLoggedInAccount();
+        if (loggedInAccount.isPresent()) {
+            return this.accountService.formattedAccountDescription(loggedInAccount.get());
         } else {
             return "You are not signed in";
         }

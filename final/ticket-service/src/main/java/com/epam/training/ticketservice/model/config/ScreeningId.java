@@ -3,9 +3,9 @@ package com.epam.training.ticketservice.model.config;
 import com.epam.training.ticketservice.model.Movie;
 import com.epam.training.ticketservice.model.Room;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
+@ToString
 @Getter
 @Embeddable
 public class ScreeningId implements Serializable {

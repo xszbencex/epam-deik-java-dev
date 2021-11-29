@@ -80,7 +80,7 @@ public class PriceService {
         PriceComponent priceComponent = this.getPriceComponentById(priceComponentName).orElseThrow(() ->
                 new NoSuchItemException("There is no price component with name: " + priceComponentName));
         final Screening screening = this.screeningService.getScreeningById(movieName, roomName, startingAt)
-                .orElseThrow(() -> new NoSuchItemException("There is no room screening with the given ids"));
+                .orElseThrow(() -> new NoSuchItemException("There is no screening with the given ids"));
         priceComponent.setScreening(screening);
 
         this.updateExistingPriceComponent(priceComponent);
@@ -111,7 +111,7 @@ public class PriceService {
         return (long) numberOfSeats * modifiedPrice;
     }
 
-    private void updateExistingPriceComponent(final PriceComponent priceComponent) {
+    public void updateExistingPriceComponent(final PriceComponent priceComponent) {
         this.priceRepository.save(priceComponent);
     }
 }

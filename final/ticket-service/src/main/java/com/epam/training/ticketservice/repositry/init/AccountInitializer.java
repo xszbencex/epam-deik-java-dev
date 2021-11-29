@@ -13,7 +13,6 @@ import java.util.Arrays;
 @Component
 public class AccountInitializer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AccountInitializer.class);
     private static final Account ADMIN_ACCOUNT = new Account("admin", "admin", true);
 
     private final AccountRepository accountRepository;
@@ -26,14 +25,12 @@ public class AccountInitializer {
 
     @PostConstruct
     public void initProducts() {
-        if (this.isProfileCiActive() || accountRepository.findById("admin").isEmpty()) {
-            LOGGER.info("Init admin account...");
+        if (this.isProfileCiActive() || accountRepository.findById(ADMIN_ACCOUNT.getUsername()).isEmpty()) {
             accountRepository.save(ADMIN_ACCOUNT);
-            LOGGER.info("Account initialization is finished");
         }
     }
 
-    private boolean isProfileCiActive() {
+    public boolean isProfileCiActive() {
         return Arrays.asList(this.environment.getActiveProfiles()).contains("ci");
     }
 

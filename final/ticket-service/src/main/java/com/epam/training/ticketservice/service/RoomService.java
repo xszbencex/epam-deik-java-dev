@@ -31,7 +31,10 @@ public class RoomService {
 
     public void updateRoom(final Room room) throws NoSuchItemException {
         this.roomRepository.findById(room.getName())
-                .map(currentRoom -> this.roomRepository.save(room))
+                .map(currentRoom -> {
+                    this.roomRepository.save(room);
+                    return currentRoom;
+                })
                 .orElseThrow(() -> new NoSuchItemException("There is no room with name: " + room.getName()));
     }
 

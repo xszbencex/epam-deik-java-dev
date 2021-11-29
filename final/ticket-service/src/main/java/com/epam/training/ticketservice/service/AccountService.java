@@ -23,12 +23,16 @@ public class AccountService {
         this.bookingService = bookingService;
     }
 
-    public Optional<Account> getLoggedInAccount() {
-        return loggedInAccount;
+    public void signIn(Account account) {
+        this.setLoggedInAccount(Optional.of(account));
     }
 
-    public void setLoggedInAccount(final Optional<Account> account) {
-        this.loggedInAccount = account;
+    public void signOut() {
+        this.setLoggedInAccount(Optional.empty());
+    }
+
+    public Optional<Account> getLoggedInAccount() {
+        return loggedInAccount;
     }
 
     public void createAccount(final Account account) throws UsernameTakenException {
@@ -63,5 +67,9 @@ public class AccountService {
         }
 
         return stringBuilder.toString();
+    }
+
+    private void setLoggedInAccount(final Optional<Account> account) {
+        this.loggedInAccount = account;
     }
 }

@@ -1,10 +1,8 @@
 package com.epam.training.ticketservice.model.config;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
-@EqualsAndHashCode
 public class Seat {
 
     private final Integer rowNum;

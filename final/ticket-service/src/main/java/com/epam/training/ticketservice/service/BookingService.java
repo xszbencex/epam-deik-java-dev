@@ -12,6 +12,7 @@ import com.epam.training.ticketservice.service.exception.SeatsTakenException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class BookingService {
@@ -47,7 +48,8 @@ public class BookingService {
         this.bookingRepository.findBookingsByScreening(screening).forEach(booking ->
                 seatList.forEach(currentSeat ->
                         booking.getSeats().forEach(bookingSeat -> {
-                            if (bookingSeat.equals(currentSeat)) {
+                            if (bookingSeat.getRowNum().equals(currentSeat.getRowNum())
+                                    && bookingSeat.getColumnNum().equals(currentSeat.getColumnNum())) {
                                 throw new SeatsTakenException(String.format("Seat (%s) is already taken", currentSeat));
                             }
                         })
@@ -85,7 +87,7 @@ public class BookingService {
                 this.priceService.calculatePriceForBooking(movieName, roomName, startingAt, seatList.size()));
     }
 
-    private List<Seat> seatsStringParser(final String seats) {
+    public List<Seat> seatsStringParser(final String seats) {
         final SeatListConverter seatListConverter = new SeatListConverter();
         return seatListConverter.convertToEntityAttribute(seats);
     }
